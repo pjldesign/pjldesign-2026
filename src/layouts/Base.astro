@@ -16,17 +16,23 @@ interface Props {
   title?: string;
   description?: string;
   image?: string | null;
+  /** keep this page out of search results (e.g. the 404 page) */
+  noindex?: boolean;
 }
 
 const {
+  noindex = false,
   page,
   title = 'Paul J Lawrence | Art Direction',
   description = 'Paul J. Lawrence is a Designer, Art Director, amateur chef and Brooklyn, NY native.',
   image = null,
 } = Astro.props;
 
-// the built files are name.html, but the public URL is the clean /name
-const canonical = new URL(Astro.url.pathname.replace(/\.html$/, ''), Astro.site).href;
+// the built files are name.html, but the public URL is the clean /name (and index.html is just /)
+const canonical = new URL(
+  Astro.url.pathname.replace(/\.html$/, '').replace(/^\/index$/, '/'),
+  Astro.site,
+).href;
 const year = new Date().getFullYear();
 const links = [
   { href: '/print-work', label: 'Print' },
@@ -42,7 +48,7 @@ const links = [
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
