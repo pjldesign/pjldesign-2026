@@ -17,6 +17,22 @@ Everything before it is reversible. Don't start Phase 3 until Phase 2 is done.
 **Never** move the domain's nameservers to Cloudflare and **never** edit the MX or TXT rows.
 Only the `www` CNAME and the bare-domain forwarding change.
 
+## Your GoDaddy DNS records (as of 2026-10-13, after the `www` switch)
+
+| Row | Value | Verdict |
+|---|---|---|
+| CNAME `www` | `pjldesign-2026.pages.dev` | **Done.** This is the new site. |
+| A `@` (two rows) | `104.19.232.38`, `104.19.233.38` | Still the old MODX edge. **Replace with the bare-domain forward (Phase 1, step 3) before cancelling MODX.** |
+| NS `@` (two rows) | `ns37/ns38.domaincontrol.com` | **Keep.** GoDaddy's own nameservers. |
+| MX, TXT (SPF, DMARC) | `secureserver.net` mail records | **Keep.** This is your email. |
+| CNAME `email` | `email.secureserver.net` | **Keep.** The GoDaddy webmail shortcut. |
+| CNAME `secureserver1._domainkey`, `secureserver2._domainkey` | `…dkim…onsecureserver.net` | **Keep.** Email signing keys; DMARC is set to reject without them. |
+| CNAME `_3bb19d…` | `…acm-validations.aws` | **Keep.** An AWS certificate validation record; deleting it could break a certificate's auto-renewal. Leave it unless you know exactly what it belongs to. |
+| CNAME `blog` | `pjl.design` | Dead (shows a MODX error page). Safe to delete during final cleanup. |
+
+**Important:** the bare `pjl.design` currently works only because the old MODX server redirects it to
+`www`. Once MODX is cancelled that stops. Set up the GoDaddy forward (Phase 1, step 3) first.
+
 ## Phase 0: Pre-flight (about 10 minutes, nothing changes yet)
 
 - [ ] Open `https://pjldesign-2026.pages.dev` on your phone and tablet. Click around.
