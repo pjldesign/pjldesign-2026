@@ -28,6 +28,9 @@ Only the `www` CNAME and the bare-domain forwarding change.
 | CNAME `email` | `email.secureserver.net` | **Keep.** The GoDaddy webmail shortcut. |
 | CNAME `secureserver1._domainkey`, `secureserver2._domainkey` | `…dkim…onsecureserver.net` | **Keep.** Email signing keys; DMARC is set to reject without them. |
 | CNAME `_3bb19d…` | `…acm-validations.aws` | **Keep.** An AWS certificate validation record; deleting it could break a certificate's auto-renewal. Leave it unless you know exactly what it belongs to. |
+| MX (two rows), TXT `@` (SPF and `D3314872`), TXT `_dmarc`, SRV `_autodiscover._tcp` | GoDaddy mail (`secureserver.net`) | **Keep all.** Your email: delivery, sender authentication and phone/Outlook setup. Confirmed present 2026-10-13. |
+| CNAME `_domainconnect`, SOA | GoDaddy's own | **Keep.** GoDaddy manages these. |
+| CNAME `_acme-challenge` (`…dcv.cloudflare.com`), TXT `_cf-custom-hostname` (a long ID) | Cloudflare hostname-verification records | Look like leftovers from MODX Cloud's Cloudflare setup. **Leave them.** They're harmless and not worth the risk of a wrong delete. Optional tidy-up only after MODX is gone. |
 | CNAME `blog` | `pjl.design` | Dead (shows a MODX error page). Safe to delete during final cleanup. |
 
 **Important:** the bare `pjl.design` currently works only because the old MODX server redirects it to
