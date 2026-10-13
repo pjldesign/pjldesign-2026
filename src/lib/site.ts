@@ -1,0 +1,15 @@
+import { z } from 'astro/zod';
+import raw from '../../content/site.json';
+
+// Site-wide settings, edited in the CMS ("Site settings"). Validated at build time,
+// so a bad value fails the build with a clear message instead of breaking the page.
+const schema = z.object({
+  /** the line shown on the orange opening screen */
+  intro: z.string().min(1),
+  /** home slider images, in order */
+  heroImages: z.array(z.string().min(1)).min(1),
+  /** footer phone number; leave empty to hide it */
+  phone: z.string().default(''),
+});
+
+export const site = schema.parse(raw);

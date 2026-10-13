@@ -1,0 +1,108 @@
+# Pages CMS (https://pagescms.org) config: edit case studies in the browser, saves commit to git.
+# Field names match src/content.config.ts exactly. Change one, change the other.
+
+media:
+  input: public/images
+  output: /images
+
+content:
+  - name: projects
+    label: Case studies
+    type: collection
+    path: content/projects
+    format: yaml-frontmatter
+    filename: '{primary}.md'
+    view:
+      primary: title
+      sort: order
+      order: asc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+
+      - name: draft
+        label: Draft (hidden from the site)
+        type: boolean
+
+      - name: categories
+        label: Categories
+        type: select
+        options:
+          multiple: true
+          values: [print, digital, brand]
+
+      - name: tags
+        label: Tags (the line shown under the title on hover)
+        type: string
+        list: true
+
+      - name: order
+        label: Grid position (lower number = earlier; use 1 to put it first)
+        type: number
+        required: true
+
+      - name: cover
+        label: Card thumbnail (image URL)
+        type: string
+
+      - name: zoom
+        label: Thumbnail zoom % (100 = none, 150, 200, up to 300)
+        type: number
+        options:
+          min: 100
+          max: 300
+
+      - name: images
+        label: Case study images, in order (image URLs)
+        type: string
+        list: true
+
+      - name: video
+        label: Vimeo player URL (https://player.vimeo.com/video/...)
+        type: string
+
+      - name: siteLink
+        label: Website URL
+        type: string
+
+      - name: siteLinkType
+        label: Website button
+        type: select
+        options:
+          values:
+            - name: visit
+              label: Visit Site
+            - name: beta
+              label: Preview Beta Site
+
+      - name: legacyUrl
+        label: Old URL (for redirects)
+        type: string
+        hidden: true
+
+      - name: body
+        label: Summary
+        type: rich-text
+
+  - name: site
+    label: Site settings
+    type: file
+    path: content/site.json
+    format: json
+    fields:
+      - name: intro
+        label: Home intro line (the big text on the orange opening screen)
+        type: text
+        required: true
+
+      - name: heroImages
+        label: Home slider images, in order (image URLs)
+        type: string
+        list: true
+        required: true
+
+      - name: phone
+        label: Footer phone number (leave empty to hide)
+        type: string

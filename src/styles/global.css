@@ -1,0 +1,549 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-pjl: #fe330a;
+  --color-ink: #333;
+  --font-sans: 'Neue Haas Unica', Helvetica, Roboto, Arial, sans-serif;
+  /* 1024px, same as the old site's "large". Must be rem like the default sm (40rem):
+     Tailwind can't order media queries that mix em and rem, so lg rules lost to sm rules. */
+  --breakpoint-lg: 64rem;
+}
+
+/* Two weights, as on the old site: Light for the menu, titles and tags; Regular for body text.
+   Use Tailwind's font-light (300) for Light; the default (400) is Regular. */
+@font-face {
+  font-family: 'Neue Haas Unica';
+  src:
+    url('/fonts/NeueHaasUnicaW1G-Regular.woff2') format('woff2'),
+    url('/fonts/NeueHaasUnicaW1G-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neue Haas Unica';
+  src: url('/fonts/NeueHaasUnicaW1G-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background: #fff;
+    color: var(--color-ink);
+    transition: background-color 0.3s;
+  }
+  body[data-movie] {
+    background: #000;
+  }
+  ::selection {
+    background: var(--color-pjl);
+    color: #fff;
+  }
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-pjl);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Side padding that respects the iPhone notch ----------
+   The page extends under the notch (viewport-fit=cover in the layout's meta tag) so full-bleed
+   things like the orange opening screen fill a phone held sideways. Text and controls keep a
+   1.6rem gutter, or the notch's inset if that is larger. env() is 0 on screens without a notch. */
+.gutter {
+  padding-left: max(1.6rem, env(safe-area-inset-left));
+  padding-right: max(1.6rem, env(safe-area-inset-right));
+}
+.nav-gutter {
+  padding-left: max(calc(1.6rem + 4px), env(safe-area-inset-left));
+  padding-right: max(1.6rem, env(safe-area-inset-right));
+}
+@media (min-width: 40.0625em) {
+  .nav-gutter {
+    padding-right: max(30px, env(safe-area-inset-right));
+  }
+}
+
+/* ---------- Nav + logo ---------- */
+
+.nav-wrapper {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
+  background: transparent;
+  transition:
+    background-color 0.2s,
+    opacity 0.3s;
+}
+/* solid bar once the page has scrolled past [data-startchange], or while contact is open */
+.nav-wrapper[data-active],
+.nav-wrapper[data-contact-open] {
+  background: #fff;
+}
+body[data-movie] .nav-wrapper {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Menu items. Sizes and breakpoints measured from the live site:
+   phones 20px, tablets 28px, desktop (1024px+) 40px. */
+.nav-link {
+  display: block;
+  color: var(--color-pjl);
+  font-weight: 300;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  transition: color 0.3s;
+}
+@media (min-width: 40.0625em) {
+  .nav-link {
+    padding: 0 15px;
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+}
+@media (min-width: 64em) {
+  .nav-link {
+    font-size: 2.5rem;
+  }
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: var(--color-ink);
+}
+
+/* Smaller text for the contact form's own button and messages */
+.form-link {
+  color: var(--color-pjl);
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.5rem);
+  transition: color 0.3s;
+}
+.form-link:hover,
+.form-link:focus-visible {
+  color: var(--color-ink);
+}
+
+/* Phones: links collapse into a hamburger menu */
+.nav-list {
+  display: none;
+}
+.nav-wrapper[data-menu-open] .nav-list {
+  display: flex;
+}
+@media (min-width: 40.0625em) {
+  .nav-list {
+    display: flex;
+  }
+}
+@media (max-width: 40em) {
+  .nav-wrapper[data-menu-open] {
+    background: #fff;
+  }
+}
+
+.logo-svg {
+  width: 4rem;
+  height: 2rem;
+  display: block;
+}
+@media (min-width: 40.0625em) {
+  .logo-svg {
+    width: 5rem;
+    height: 2.5rem;
+  }
+}
+/* Logo collapse timing. Three letters x (fade + stagger) = ~0.26s in total, finishing just
+   after the nav bar's own 0.2s fade. Long delays made the letters trail the bar and hang when
+   the scroll direction reversed, so keep --logo-step small. */
+.logo-svg {
+  --logo-dur: 0.18s;
+  --logo-step: 0.04s;
+  --logo-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.logo-svg g {
+  fill: var(--color-pjl);
+  transition: opacity var(--logo-dur) var(--logo-ease);
+}
+/* Bar goes solid: L, L, J-hook fade out in that order, leaving "PJ"... */
+.nav-wrapper[data-active] .logo-svg :is(#l2, #l1, #j2) {
+  opacity: 0;
+}
+.nav-wrapper[data-active] .logo-svg #l2 { transition-delay: 0s; }
+.nav-wrapper[data-active] .logo-svg #l1 { transition-delay: var(--logo-step); }
+.nav-wrapper[data-active] .logo-svg #j2 { transition-delay: calc(var(--logo-step) * 2); }
+/* ...and back to the top: the mirror order, J-hook first. */
+.logo-svg #j2 { transition-delay: 0s; }
+.logo-svg #l1 { transition-delay: var(--logo-step); }
+.logo-svg #l2 { transition-delay: calc(var(--logo-step) * 2); }
+/* keep the full mark while the contact panel is open */
+.nav-wrapper[data-active][data-contact-open] .logo-svg :is(#l2, #l1, #j2) {
+  opacity: 1;
+}
+
+/* Pulse while a page is loading (or on logo hover) */
+@keyframes logo-beat {
+  0%, 100% { opacity: 0; }
+  15%, 85% { opacity: 1; }
+}
+html[data-loading] .logo-svg g,
+.logo-svg:hover g {
+  animation: logo-beat 2s cubic-bezier(0.6, 1, 1, 1) infinite;
+}
+.logo-svg #l2 { animation-delay: -0.3s !important; }
+.logo-svg #l1 { animation-delay: -0.6s !important; }
+.logo-svg #j2 { animation-delay: -0.9s !important; }
+.logo-svg #j1 { animation-delay: -1.2s !important; }
+.logo-svg #p2 { animation-delay: -1.5s !important; }
+.logo-svg #p1 { animation-delay: -1.8s !important; }
+
+/* ---------- Contact panel ---------- */
+
+.contact-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s ease;
+}
+.nav-wrapper[data-contact-open] .contact-panel {
+  grid-template-rows: 1fr;
+}
+.contact-panel > div {
+  min-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility 0s 0.5s;
+}
+.nav-wrapper[data-contact-open] .contact-panel > div {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.contact-field {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-pjl) 35%, transparent);
+  color: var(--color-pjl);
+  font: inherit;
+  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+  padding: 0.75rem 0;
+  border-radius: 0;
+}
+.contact-field::placeholder {
+  color: color-mix(in srgb, var(--color-pjl) 55%, transparent);
+}
+.contact-field:focus {
+  outline: none;
+  border-bottom-color: var(--color-pjl);
+}
+
+/* ---------- Home hero (also the preloader) ---------- */
+
+/* Scrolling is locked while the orange intro runs. The script removes data-preloading as soon as the
+   slideshow starts; the animation below is a last-resort release so a script error can never leave
+   the page stuck (the intro's own limit is 8s). */
+html[data-preloading] {
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  animation: preload-failsafe 0s 10s forwards;
+}
+@keyframes preload-failsafe {
+  to {
+    overflow: visible;
+    touch-action: auto;
+  }
+}
+
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  background: var(--color-pjl);
+  overflow: hidden;
+}
+.hero-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 0 max(1.6rem, env(safe-area-inset-right)) 0 max(1.6rem, env(safe-area-inset-left));
+  opacity: 0;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+.hero[data-intro] .hero-intro {
+  opacity: 1;
+}
+/* Headline sizes measured from the live site at each breakpoint */
+.hero-intro p {
+  color: #fff;
+  font-size: 2.75rem;
+  line-height: 3rem;
+  max-width: 100%;
+  margin-inline: auto;
+}
+@media (min-width: 40.0625em) {
+  .hero-intro p {
+    font-size: 5rem;
+    line-height: 5.25rem;
+  }
+}
+@media (min-width: 64em) {
+  .hero-intro p {
+    font-size: 6rem;
+    line-height: 6.2rem;
+    max-width: 70%;
+  }
+}
+@media (min-width: 90.0625em) {
+  .hero-intro p {
+    font-size: 8rem;
+    line-height: 8.2rem;
+  }
+}
+.hero-slides {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.hero[data-running] .hero-slides {
+  opacity: 1;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  background: var(--color-pjl);
+}
+.hero-slide[data-current] {
+  visibility: visible;
+}
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scroll cue: the old 27x18 left arrow turned to point down (18x27), bobbing every 3s.
+   Appears with the slideshow and fades out (0.3s, like the logo) once the visitor scrolls.
+   Not tied to the logo's trigger: the logo changes at ~884px, after the hero has left the screen. */
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 3;
+  width: 18px;
+  height: 27px;
+  margin-left: -9px;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.scroll-cue img {
+  flex: none;
+  max-width: none;
+  width: 27px;
+  height: 18px;
+  transform: rotate(-90deg);
+}
+.hero[data-running] .scroll-cue {
+  opacity: 1;
+  animation: cue-bounce 3s ease-in-out infinite;
+}
+html[data-scrolled] .hero .scroll-cue {
+  opacity: 0;
+}
+/* two identical bounces, then a rest until the 3s mark */
+@keyframes cue-bounce {
+  0%, 32%, 100% { transform: translateY(0); }
+  8%, 24% { transform: translateY(10px); }
+  16% { transform: translateY(0); }
+}
+
+/* ---------- Project grid ---------- */
+
+.card-overlay {
+  background: rgb(0 0 0 / 0.4);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+.card:hover .card-overlay,
+.card:focus-visible .card-overlay {
+  opacity: 1;
+}
+
+/* ---------- Case study ---------- */
+
+/* Phones 22px / 30px (about 33 characters a line instead of 24); tablets and up 28px / 36px */
+.project-summary p {
+  font-size: 1.375rem;
+  line-height: 1.875rem;
+  margin-bottom: 1.25rem;
+}
+@media (min-width: 40.0625em) {
+  .project-summary p {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+}
+.project-summary p:last-child {
+  margin-bottom: 0;
+}
+.project-summary a {
+  color: var(--color-pjl);
+  transition: color 0.3s;
+}
+.project-summary a:hover {
+  color: #000;
+}
+
+.embed-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  background: #000;
+}
+.embed-container iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Fullscreen image viewer */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s,
+    visibility 0s 0.3s;
+}
+.lightbox[data-open] {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.lb-track {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.lb-track::-webkit-scrollbar {
+  display: none;
+}
+.lb-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem max(1rem, env(safe-area-inset-right)) 1rem max(1rem, env(safe-area-inset-left));
+}
+.lb-slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.lb-btn {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  color: #fff;
+  background: var(--color-pjl);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.lb-btn:hover {
+  background: #fff;
+  color: var(--color-pjl);
+}
+/* keep the viewer's buttons clear of the notch (these beat the layout's left-4 / right-4) */
+.lb-btn[data-lb-prev] {
+  left: max(1rem, env(safe-area-inset-left));
+}
+.lb-btn[data-lb-next],
+.lb-btn[data-lb-close] {
+  right: max(1rem, env(safe-area-inset-right));
+}
+
+/* ---------- Short screens (phones held sideways, short browser windows) ----------
+   These are wide enough to get the tablet/desktop sizes but only ~375px tall, so the intro
+   overflowed and the fixed top bar ate a fifth of the screen. Size by height here instead.
+   Keep this block after the nav, logo and hero rules it overrides. */
+@media (max-height: 520px) {
+  .hero-intro p {
+    max-width: 80%;
+    font-size: min(5rem, 13vh);
+    line-height: 1.05;
+  }
+  .nav-wrapper nav {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  .nav-wrapper .logo-svg {
+    width: 4rem;
+    height: 2rem;
+  }
+  .nav-wrapper .nav-link {
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+  }
+}
+
+/* ---------- Page transitions ---------- */
+
+::view-transition-old(root) {
+  animation: 0.25s ease-out both fade-out;
+}
+::view-transition-new(root) {
+  animation: 0.4s 0.1s ease-in both fade-in;
+}
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  /* looping animations would flicker at 0.01ms, so switch them off instead */
+  .scroll-cue,
+  html[data-loading] .logo-svg g,
+  .logo-svg:hover g {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "pjldesign-2026",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "content": "node scripts/extract-content.mjs",
+    "verify": "node scripts/verify-against-live.mjs"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vimeo/player": "^2.6.3",
+    "astro": "^7.3.8",
+    "tailwindcss": "^4.3.3"
+  }
+}

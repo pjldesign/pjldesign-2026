@@ -1,0 +1,108 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { liveProjects, relatedPool, RELATED_COUNT } from '../lib/projects';
+
+export async function getStaticPaths() {
+  const all = await liveProjects();
+  return all.map((project) => ({ params: { slug: project.id }, props: { project, all } }));
+}
+
+const { project, all } = Astro.props;
+const { title, tags, cover, images, video, siteLink, siteLinkType } = project.data;
+const siteLinkLabel = { visit: 'Visit Site', beta: 'Preview Beta Site' };
+const { Content } = await render(project);
+const related = relatedPool(project, all);
+---
+
+<Base
+  page="project"
+  title={`${title} | Paul J Lawrence`}
+  description={`${title}: ${tags.join(', ')}. Work by Paul J. Lawrence.`}
+  image={cover}
+>
+  <div data-startchange>
+    {
+      video && (
+        <div class="mx-auto mb-12 max-w-[1700px] gutter lg:mb-20">
+          <div class="embed-container">
+            <iframe src={video} title={`${title} video`} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen />
+          </div>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="mx-auto max-w-[1700px] gutter" data-project>
+    <!-- Side by side on desktop (title left, summary right); stacked on phones and tablets. -->
+    <div class="grid lg:grid-cols-12">
+      <h1 class="mt-11 mb-3 text-[1.75rem] leading-[1.25] text-pjl sm:mt-[60px] sm:mb-7 sm:text-[2rem] sm:leading-9 lg:col-span-6 lg:mt-[27px] lg:mb-0 lg:text-[6rem] lg:leading-[6.25rem]">{title}</h1>
+      <div class="project-summary pt-2 pb-12 font-light text-[#666] sm:pb-[68px] sm:text-[#888] lg:col-span-6 lg:col-start-8 lg:pt-[38.5px]">
+        <Content />
+        {
+          siteLink && siteLinkType && (
+            <p><a href={siteLink} target="_blank" rel="noopener">{siteLinkLabel[siteLinkType]} &#x2192;</a></p>
+          )
+        }
+      </div>
+    </div>
+
+    {
+      images.length > 0 && (
+        <ul class="-mx-2 grid gap-6 sm:mx-0 sm:grid-cols-2">
+          {images.map((src, i) => (
+            <li>
+              <button type="button" class="block w-full cursor-zoom-in" data-thumb={i} aria-label={`View image ${i + 1} of ${images.length} full screen`}>
+                <img src={src} alt={`${title}, image ${i + 1}`} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" class="block h-auto w-full" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section class="mt-[60px] mb-0 sm:mt-[52px] sm:mb-20 lg:mt-[168px]" aria-labelledby="related-heading">
+          {/* Sizes measured from the live site. Phones: 28px Regular, one column.
+              Tablets: 28px Light, three flush columns. Desktop: 41.6px Light. */}
+          <h2
+            id="related-heading"
+            class="text-[1.75rem] leading-[1.25] text-pjl sm:mb-6 sm:font-light sm:leading-7 lg:mb-[60px] lg:text-[2.6rem] lg:leading-[3rem]"
+          >
+            Related:
+          </h2>
+          {/* All same-category projects are listed; only RELATED_COUNT show. src/scripts/site.ts
+              re-shuffles them on every visit. Hidden cards never load their lazy images. */}
+          <ul class="grid gap-6 sm:grid-cols-3 sm:gap-0" data-related data-related-count={RELATED_COUNT}>
+            {related.map((p, i) => <ProjectCard project={p} related hidden={i >= RELATED_COUNT} />)}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+
+  {
+    images.length > 0 && (
+      <div class="lightbox" data-lightbox role="dialog" aria-modal="true" aria-label={`${title} images`}>
+        <div class="lb-track" data-lb-track tabindex="-1">
+          {images.map((src, i) => (
+            <div class="lb-slide" data-lb-slide>
+              <img data-src={src} alt={`${title}, image ${i + 1}`} decoding="async" />
+            </div>
+          ))}
+        </div>
+        <button type="button" class="lb-btn left-4 top-1/2 -translate-y-1/2" data-lb-prev aria-label="Previous image">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 4 7 12l8 8" /></svg>
+        </button>
+        <button type="button" class="lb-btn right-4 top-1/2 -translate-y-1/2" data-lb-next aria-label="Next image">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 4 8 8-8 8" /></svg>
+        </button>
+        <button type="button" class="lb-btn right-4 top-4" data-lb-close aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 5l14 14M19 5 5 19" /></svg>
+        </button>
+      </div>
+    )
+  }
+</Base>

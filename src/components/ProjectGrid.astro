@@ -1,0 +1,20 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import type { Project } from '../lib/projects';
+
+interface Props {
+  projects: Project[];
+  /** how many leading thumbnails load immediately */
+  eagerCount?: number;
+  startchange?: boolean;
+  /** space above the grid when it follows the home hero (matches the old site: 128 / 192 / 384px) */
+  afterHero?: boolean;
+}
+const { projects, eagerCount = 6, startchange = true, afterHero = false } = Astro.props;
+---
+
+<div class:list={['mx-auto max-w-[1700px] gutter pb-16', afterHero && 'pt-32 sm:pt-48 lg:pt-96']}>
+  <ul class="grid gap-6 sm:grid-cols-2 sm:gap-x-2 lg:grid-cols-3 lg:gap-y-2" data-startchange={startchange ? '' : undefined}>
+    {projects.map((p, i) => <ProjectCard project={p} eager={i < eagerCount} />)}
+  </ul>
+</div>

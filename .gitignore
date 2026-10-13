@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+private/
+.DS_Store
+# old live-site bundle kept only for reference, not needed in the repo
+brief/pjl-migration-package/live-snapshot-2026-10-03/

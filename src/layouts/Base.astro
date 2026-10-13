@@ -1,0 +1,145 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import LogoMark from '../components/LogoMark.astro';
+import { CONTACT_ENDPOINT, CONTACT_EMAIL } from '../config';
+import { site } from '../lib/site';
+
+const warned = globalThis as { __contactWarned?: boolean };
+if (CONTACT_ENDPOINT.includes('REPLACE_ME') && !warned.__contactWarned) {
+  warned.__contactWarned = true;
+  console.warn('[contact] CONTACT_ENDPOINT in src/config.ts is still a placeholder; the contact form will not send.');
+}
+
+interface Props {
+  page: 'home' | 'category' | 'project';
+  title?: string;
+  description?: string;
+  image?: string | null;
+}
+
+const {
+  page,
+  title = 'Paul J Lawrence | Art Direction',
+  description = 'Paul J. Lawrence is a Designer, Art Director, amateur chef and Brooklyn, NY native.',
+  image = null,
+} = Astro.props;
+
+// the built files are name.html, but the public URL is the clean /name
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, ''), Astro.site).href;
+const year = new Date().getFullYear();
+const links = [
+  { href: '/print-work', label: 'Print' },
+  { href: '/digital-work', label: 'Digital' },
+  { href: '/brand-work', label: 'Brand' },
+];
+---
+
+<!doctype html>
+<html lang="en" data-preloading={page === 'home' ? '' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/NeueHaasUnicaW1G-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff" href="/fonts/NeueHaasUnicaW1G-Light.woff" crossorigin />
+    <link rel="preconnect" href="https://pjl-site-media.s3.amazonaws.com" crossorigin />
+    {/* the home intro locks scrolling (see global.css); without JavaScript it could never unlock */}
+    <noscript><style>html[data-preloading]{overflow:visible !important;touch-action:auto !important;animation:none !important}</style></noscript>
+    <ClientRouter />
+  </head>
+  <body data-page={page}>
+    <header class="nav-wrapper" data-nav transition:persist>
+      <nav
+        class="mx-auto flex max-w-[1700px] flex-wrap items-center justify-between nav-gutter py-4 sm:py-5 lg:items-start lg:py-7"
+        aria-label="Main"
+      >
+        <a href="/" aria-label="PJL — home" class="block">
+          <LogoMark />
+        </a>
+
+        <button
+          type="button"
+          class="-mr-1 p-1 text-pjl sm:hidden"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="nav-list"
+          aria-label="Menu"
+        >
+          <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M0 2h22M0 9h22M0 16h22" />
+          </svg>
+        </button>
+
+        <ul id="nav-list" class="nav-list mt-[18px] w-full flex-col sm:mt-0 sm:w-auto sm:flex-row sm:items-center">
+          {
+            links.map((l) => (
+              <li class="border-b border-pjl py-2.5 sm:border-0 sm:py-0">
+                <a href={l.href} class="nav-link" data-nav-link>
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+          <li class="py-2.5 sm:py-0">
+            <button type="button" class="nav-link cursor-pointer" data-contact-toggle aria-expanded="false" aria-controls="contact-panel">
+              <span data-label-closed>Contact</span><span data-label-open hidden>Close</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <div id="contact-panel" class="contact-panel" data-contact-panel>
+        <div>
+          <form
+            action={CONTACT_ENDPOINT}
+            method="post"
+            data-contact-form
+            class="mx-auto grid max-w-[1700px] gap-2 gutter pt-2 pb-10 lg:grid-cols-2"
+          >
+            <div class="hidden lg:block"></div>
+            <div>
+              <label class="sr-only" for="name">Name</label>
+              <input class="contact-field" id="name" name="name" type="text" placeholder="Name" autocomplete="name" required />
+              <label class="sr-only" for="email">Email</label>
+              <input class="contact-field" id="email" name="email" type="email" placeholder="Email" autocomplete="email" required />
+              <label class="sr-only" for="message">Message</label>
+              <textarea class="contact-field" id="message" name="message" rows="3" placeholder="Message..." required></textarea>
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hidden" />
+              <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <button type="submit" class="form-link cursor-pointer border border-pjl px-6 py-2 hover:border-ink disabled:opacity-50" data-contact-submit>Submit</button>
+                <p class="!text-ink form-link" role="status" aria-live="polite" data-contact-status></p>
+              </div>
+              <noscript><p class="form-link mt-3">Or email <a href={`mailto:${CONTACT_EMAIL}`} class="underline">{CONTACT_EMAIL}</a>.</p></noscript>
+            </div>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main id="content" class:list={[page !== 'home' && 'pt-20 sm:pt-36 lg:pt-84']}>
+      <slot />
+    </main>
+
+    <footer class="border-b-[10px] border-pjl bg-white gutter pt-6 pb-[max(2rem,env(safe-area-inset-bottom))] text-neutral-500">
+      <div class="mx-auto grid max-w-[1700px] gap-1 text-base lg:grid-cols-3 lg:text-lg">
+        <a href={`mailto:${CONTACT_EMAIL}`} class="hover:text-pjl"><span>e. </span>{CONTACT_EMAIL}</a>
+        {site.phone ? <p>t. {site.phone}</p> : <p aria-hidden="true" />}
+        <p class="lg:text-right">© PJL Design <span data-year>{year}</span></p>
+      </div>
+    </footer>
+
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

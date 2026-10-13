@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import { liveProjects } from '../lib/projects';
+import { site } from '../lib/site';
+
+const projects = await liveProjects();
+---
+
+<Base page="home" image={site.heroImages[0]}>
+  <!-- The orange intro doubles as the preloader: slides and the first thumbnails load behind it. -->
+  <section class="hero" data-hero aria-label="Introduction">
+    <div class="hero-intro"><p>{site.intro}</p></div>
+    <div class="hero-slides" aria-hidden="true">
+      {
+        site.heroImages.map((src, i) => (
+          <div class="hero-slide" data-slide data-current={i === 0 ? '' : undefined}>
+            <img src={src} alt="" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          </div>
+        ))
+      }
+    </div>
+    <!-- Bouncing arrow: there is more below. Reuses the old site's orange arrow, turned to point down. -->
+    <span class="scroll-cue" aria-hidden="true"><img src="/img/scroll-arrow.png" alt="" width="27" height="18" /></span>
+  </section>
+
+  <ProjectGrid projects={projects} eagerCount={9} afterHero />
+</Base>

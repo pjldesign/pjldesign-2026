@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import { categories, liveProjects, type Category } from '../lib/projects';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { category } }));
+}
+
+const category = Astro.params.category as Category;
+const projects = (await liveProjects()).filter((p) => p.data.categories.includes(category));
+const label = category[0].toUpperCase() + category.slice(1);
+---
+
+<Base
+  page="category"
+  title={`${label} Work | Paul J Lawrence`}
+  description={`${label} work by Paul J. Lawrence, Designer and Art Director.`}
+>
+  <h1 class="sr-only">{label} work</h1>
+  <ProjectGrid projects={projects} eagerCount={6} />
+</Base>
