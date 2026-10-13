@@ -1,0 +1,78 @@
+# Cutover runbook: pjl.design to the new site, then retire MODX
+
+The only step here that can't be undone is deleting or cancelling MODX (Phase 3).
+Everything before it is reversible. Don't start Phase 3 until Phase 2 is done.
+
+## Facts (looked up 2026-10-13)
+
+| | |
+|---|---|
+| DNS is hosted at | GoDaddy (`ns37/ns38.domaincontrol.com`). **Stay there.** |
+| Email is hosted at | GoDaddy mail (`smtp.secureserver.net`, `mailstore1.secureserver.net`) |
+| Email protection | SPF + DMARC set to **reject**: a wrong mail record bounces your mail |
+| Old website | bare `pjl.design`: A records `104.19.232.38` and `104.19.233.38` (TTL 10 min); `www` is a CNAME to `pjl.design` (TTL 1 hr) |
+| New site | `https://pjldesign-2026.pages.dev` (Cloudflare Pages, auto-deploys from GitHub) |
+| Main address | `https://www.pjl.design` (already set as the canonical address in the site) |
+
+**Never** move the domain's nameservers to Cloudflare and **never** edit the MX or TXT rows.
+Only the `www` CNAME and the bare-domain forwarding change.
+
+## Phase 0: Pre-flight (about 10 minutes, nothing changes yet)
+
+- [ ] Open `https://pjldesign-2026.pages.dev` on your phone and tablet. Click around.
+- [ ] Send a test message through the contact form on that site. Confirm it reaches your inbox.
+- [ ] **Back up the MODX database export.** `private/modx-export.sql` exists only on this Mac and is
+      deliberately not in GitHub. Copy it somewhere safe (iCloud Drive, an external drive).
+- [ ] **Confirm your image bucket is yours.** In the AWS console, check that `pjl-site-media` is in
+      your own AWS account (not created by or tied to the MODX Cloud account). All case-study images
+      load from it. It must keep existing and stay publicly readable.
+
+## Phase 1: Cutover (about 15 minutes)
+
+1. **Cloudflare:** Workers & Pages > `pjldesign-2026` > **Custom domains** > **Set up a custom domain**.
+   Enter `www.pjl.design`. Cloudflare shows the CNAME target (`pjldesign-2026.pages.dev`).
+2. **GoDaddy DNS** (My Products > `pjl.design` > DNS): edit the **CNAME** named `www`.
+   Value: `pjldesign-2026.pages.dev`. TTL: 10 minutes. Do not touch any MX or TXT row.
+3. **GoDaddy forwarding** (domain settings > Forwarding): forward `pjl.design` to
+   `https://www.pjl.design`, type **Permanent (301)**, forward only. Accept the warning that it
+   replaces the A records.
+4. Wait for the Cloudflare custom domain to show **Active** (usually a few minutes).
+
+**Verify** (ask Claude to run these, or check in a browser):
+- [ ] `https://www.pjl.design` shows the new site (padlock present).
+- [ ] `https://pjl.design` redirects to `https://www.pjl.design`. Try both `http://` and `https://`.
+- [ ] An old link such as `https://www.pjl.design/healthline.html` lands on `/healthline`.
+- [ ] Send yourself an email **to** `paul@pjl.design` and reply **from** it. Email must still work.
+- [ ] Submit the contact form from the real domain.
+
+**Rollback (if anything looks wrong):** set the `www` CNAME value back to `pjl.design`, remove the
+forwarding, and re-add two A records for the bare `pjl.design`: `104.19.232.38` and `104.19.233.38`.
+MODX is still running at this point, so the old site comes straight back.
+
+## Phase 2: Watch (48 hours)
+
+- [ ] Leave MODX Cloud running and paid. It's the safety net.
+- [ ] Next day, on your phone using mobile data (not home Wi-Fi), open the site and a few case studies.
+- [ ] Confirm email still sends and receives.
+- [ ] Optional: add `www.pjl.design` to Google Search Console to watch for crawl problems.
+
+## Phase 3: Retire MODX (only after Phase 2 looks good)
+
+1. **Final backup.** In the MODX Cloud dashboard, take or download a full snapshot/backup (files and
+   database) and store it with the SQL export. After this, the old site is gone for good.
+2. **Check what you are paying for.** Open both the MODX Cloud billing page and your GoDaddy
+   account. Cancel the **MODX Cloud** subscription (look for cancel or delete cloud, and do it
+   before your next billing date). If GoDaddy also bills you for a *hosting* or *website builder*
+   plan, cancel that too.
+3. **Do NOT cancel** (these are still needed):
+   - the `pjl.design` **domain registration** (keep auto-renew on)
+   - the GoDaddy **email** plan
+   - the **S3 bucket** `pjl-site-media` (every image is served from it)
+   - the Cloudflare Pages project and the GitHub repo
+4. After cancelling, confirm the live site, images, and email all still work.
+
+## Reminders
+
+- GitHub token expires **2027-01-11**: make a new one before then or pushes will stop working.
+- Domain renews yearly at GoDaddy.
+- Formspree's free plan allows 50 contact messages a month.

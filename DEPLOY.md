@@ -1,46 +1,32 @@
 # Deploying pjl.design (GitHub + Cloudflare Pages)
 
-Cost: $0/month for hosting. Domain stays registered at GoDaddy; only DNS changes.
+Cost: $0/month for hosting. The domain stays registered at GoDaddy; only the `www` record changes.
 
-## 1. Put the code on GitHub (once)
+## Set up (done 2026-10-13)
 
-1. On github.com create a **new empty private repo** (no README, no .gitignore, no license), e.g. `pjldesign-2026`.
-2. In this folder:
+- Code: private GitHub repo `pjldesign/pjldesign-2026`, branch `main`.
+- Hosting: Cloudflare Pages project `pjldesign-2026` at `https://pjldesign-2026.pages.dev`.
 
-   ```bash
-   git remote add origin https://github.com/<your-username>/pjldesign-2026.git
-   git push -u origin main
-   ```
-
-## 2. Create the Cloudflare Pages project (once)
-
-Cloudflare dashboard > Workers & Pages > Create > Pages > Connect to Git > pick the repo.
-
-| Setting | Value |
+| Cloudflare setting | Value |
 |---|---|
 | Framework preset | Astro |
 | Build command | `npm run build` |
 | Build output directory | `dist` |
 | Environment variable | `NODE_VERSION` = `22` |
 
-Every push to `main` now deploys automatically (about a minute). You get a free `*.pages.dev` preview URL to test on real devices.
+Every push to `main` deploys automatically (about a minute).
 
-## 3. Before pointing the real domain at it
+## Going live on pjl.design and shutting down MODX
 
-- [ ] Click through the `*.pages.dev` site on your phone and tablet.
-- [ ] Send a test message through the contact form.
-- [ ] **Check where your email lives.** If `paul@pjl.design` (or any address at the domain) is hosted through GoDaddy or MODX Cloud, keep its MX records when DNS moves, or email will stop.
-- [ ] Old links such as `/healthline.html` redirect to `/healthline` automatically (Cloudflare does this). `/duplicate-of-healthline-/-rvo-health` redirects to `/rvo-health` via `public/_redirects`.
-
-## 4. Cutover
-
-1. Add `www.pjl.design` (and `pjl.design`) as custom domains on the Pages project.
-2. Point DNS as Cloudflare instructs (either move the nameservers to Cloudflare, or add the CNAME at GoDaddy). **Keep MX/TXT email records.**
-3. Check the live site. Keep MODX Cloud running until you're happy, then cancel it.
+See **[CUTOVER.md](CUTOVER.md)**. It covers the DNS switch, checks, rollback, and the safe order for
+retiring the MODX site.
 
 ## Notes
 
-- Public URLs are clean (`/healthline`); the built files are `healthline.html`.
+- Public URLs are clean (`/healthline`); the built files are `healthline.html`. Cloudflare redirects
+  old `/healthline.html` links to `/healthline` automatically.
+- `public/_redirects` sends the old duplicate page to `/rvo-health`.
 - `public/_headers` sets long caching for fonts and built assets, plus basic security headers.
-- Content edits (Pages CMS, once connected to the repo) are commits, so each save redeploys.
+- Content edits made in the browser editor (Pages CMS, once connected) are commits, so each save redeploys.
+  Pull before working locally so your computer and GitHub don't drift apart.
 - `private/` (the MODX database export) is git-ignored on purpose: it holds user accounts and password hashes.
