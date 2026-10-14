@@ -72,6 +72,8 @@ MODX is still running at this point, so the old site comes straight back.
 
 ## Phase 1b: Make the bare `pjl.design` work without MODX (before cancelling it)
 
+> **DONE 2026-10-13/14.** Cloudflare hosts the DNS (nameservers `dante.ns.cloudflare.com`, `liv.ns.cloudflare.com`), zone Active. Email records copied and verified identical, all DNS only. Apex is a proxied placeholder A (`192.0.2.1`) with a redirect rule "Bare domain to www" (301, hostname equals pjl.design). GoDaddy's old DNS records are still there as a backup. **Rollback:** at GoDaddy set nameservers back to `ns37.domaincontrol.com` / `ns38.domaincontrol.com`.
+
 The problem: GoDaddy DNS can't point a bare domain at Cloudflare Pages, and GoDaddy's forwarding has
 no HTTPS. The clean fix is to let **Cloudflare host the domain's DNS** (free), which also gives the
 bare domain a proper certificate and redirect. Email stays at GoDaddy. This is the one step that
