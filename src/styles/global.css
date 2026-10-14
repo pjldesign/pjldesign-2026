@@ -53,7 +53,7 @@
   body {
     background: #fff;
     color: var(--color-ink);
-    transition: background-color 0.3s;
+    transition: background-color 0.5s ease-out; /* the page fades to black while a video plays (0.5s, as on the old site) */
     /* Short pages (the 404) still fill the screen, so the footer sits at the bottom instead of floating
        mid-screen. The header is fixed, so only <main> and <footer> take part. */
     display: flex;
@@ -113,15 +113,18 @@
   background: transparent;
   transition:
     background-color 0.2s,
-    opacity 0.3s;
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
 }
 /* solid bar once the page has scrolled past [data-startchange], or while contact is open */
 .nav-wrapper[data-active],
 .nav-wrapper[data-contact-open] {
   background: #fff;
 }
+/* while a video plays the menu fades out and slides up (as on the old site) */
 body[data-movie] .nav-wrapper {
   opacity: 0;
+  transform: translateY(-100%);
   pointer-events: none;
 }
 
