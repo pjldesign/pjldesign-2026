@@ -23,7 +23,7 @@ const after = at < 0 ? '' : site.notFoundLink.slice(at + under.length);
     <h1 class="notfound-copy">{site.notFoundTitle}</h1>
     <p class="notfound-copy">
       {site.notFoundText}{' '}
-      {before}<a href="/">{at >= 0 ? <span class="notfound-underline">{under}</span> : under}{after}</a>
+      {before}<a href="/" data-skip-intro>{at >= 0 ? <span class="notfound-underline">{under}</span> : under}{after}</a>
     </p>
   </div>
 </Base>

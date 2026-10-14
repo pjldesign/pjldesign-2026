@@ -224,6 +224,17 @@ document.addEventListener('astro:before-swap', () => {
 /* ---------- Home hero: orange intro = preloader, then slideshow ---------- */
 
 let introSeen = false;
+// Links marked data-skip-intro (the logo, the 404 "back to the work" link) go straight to the work, with no
+// welcome screen, but only once the visitor has already seen the welcome in this session. A cold arrival
+// (e.g. landing on the 404 first) still gets it. Set on click, consumed by the next initHero.
+let skipIntroOnce = false;
+document.addEventListener(
+  'click',
+  (e) => {
+    if ((e.target as HTMLElement).closest?.('[data-skip-intro]')) skipIntroOnce = true;
+  },
+  true,
+);
 
 async function initHero() {
   const hero = document.querySelector<HTMLElement>('[data-hero]');
@@ -238,19 +249,22 @@ async function initHero() {
     html.removeAttribute('data-preloading'); // never leave the page locked behind us
   });
 
+  const skipIntro = skipIntroOnce && introSeen;
+  skipIntroOnce = false;
+
   // Scrolling stays locked until the slideshow starts (see "data-preloading" in global.css).
   // The intro always starts from the top, so a reload can't leave the visitor scrolled past it.
   html.setAttribute('data-preloading', '');
   window.scrollTo(0, 0);
 
   const reduce = reduceMotion.matches;
-  setTimeout(() => !cancelled && hero.setAttribute('data-intro', ''), reduce ? 0 : 400);
+  if (!skipIntro) setTimeout(() => !cancelled && hero.setAttribute('data-intro', ''), reduce ? 0 : 400);
 
   // Wait for the first slide and the first thumbnails, so the grid is ready when the intro lifts.
   const firstSlide = slides[0]?.querySelector('img');
   const thumbs = [...document.querySelectorAll<HTMLImageElement>('[data-card-img][loading="eager"]')];
   const assets = Promise.all([firstSlide, ...thumbs].filter(Boolean).map((i) => imageReady(i!)));
-  const minShown = sleep(reduce ? 0 : introSeen ? 600 : 2500);
+  const minShown = sleep(reduce || skipIntro ? 0 : introSeen ? 600 : 2500);
   await Promise.race([Promise.all([assets, minShown]), sleep(8000)]);
   if (cancelled) return;
   introSeen = true;
@@ -386,6 +400,7 @@ document.addEventListener('astro:page-load', () => {
   document.querySelectorAll('[data-year]').forEach((el) => (el.textContent = String(new Date().getFullYear())));
   initNavState();
   initHero();
+  skipIntroOnce = false; // a skip request only applies to the page it was clicked for
   initLightbox();
   initRelated();
   initVimeo();
