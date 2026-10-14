@@ -383,22 +383,14 @@ html[data-preloading] {
   /* the tight family sits the glyphs 0.15em higher in the line box; put them back */
   position: relative;
   top: 0.15em;
-  color: var(--color-pjl);
+  /* the whole message uses the case-study description grey: #666 on phones, #888 from tablet up */
+  color: #666;
   font-weight: 300;
   font-size: 2.75rem;
   line-height: 3rem;
 }
 .notfound-copy a {
   transition: color 0.3s;
-}
-/* Headline orange; the sentence and link take the case-study description grey (#666 phone, #888 tablet up). */
-p.notfound-copy {
-  color: #666;
-}
-@media (min-width: 40.0625em) {
-  p.notfound-copy {
-    color: #888;
-  }
 }
 .notfound-underline {
   text-decoration: underline;
@@ -411,6 +403,7 @@ p.notfound-copy {
 }
 @media (min-width: 40.0625em) {
   .notfound-copy {
+    color: #888;
     font-size: 5rem;
     line-height: 5.25rem;
   }
