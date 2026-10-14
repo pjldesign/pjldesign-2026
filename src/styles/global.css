@@ -130,17 +130,35 @@ body[data-movie] .nav-wrapper {
 .form-link:focus-visible {
   color: var(--color-ink);
 }
-/* Submit button: white text on a pjl-orange fill, 2px corners. Hover swaps the fill to ink. */
+/* Submit button: white text on a pjl-orange fill, 2px corners.
+   Hover (mouse only, so it never sticks after a tap) and press both swap the fill to ink; press also
+   sinks slightly. Keyboard focus gets an outline instead of a colour change. Disabled (mid-send) is inert. */
 .form-link.submit-cta {
   color: #fff;
   background-color: var(--color-pjl);
   border-radius: 2px;
-  transition: background-color 0.3s;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
 }
-.form-link.submit-cta:hover,
+@media (hover: hover) {
+  .form-link.submit-cta:hover:not(:disabled) {
+    color: #fff;
+    background-color: var(--color-ink);
+  }
+}
 .form-link.submit-cta:focus-visible {
   color: #fff;
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+.form-link.submit-cta:active:not(:disabled) {
+  color: #fff;
   background-color: var(--color-ink);
+  transform: scale(0.97);
+}
+.form-link.submit-cta:disabled {
+  cursor: default;
 }
 
 /* Phones: links collapse into a hamburger menu */
