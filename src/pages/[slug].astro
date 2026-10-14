@@ -35,8 +35,27 @@ const isVideoFile = !!video && /\.(mp4|webm|mov|m4v)([?#]|$)/i.test(video);
         <div class="mx-auto mb-12 max-w-[1700px] gutter lg:mb-20">
           <div class="embed-container">
             {isVideoFile ? (
-              // #t=0.1 makes browsers paint a first frame instead of a black box before play
-              <video src={`${video}#t=0.1`} controls playsinline preload="metadata" title={`${title} video`} />
+              <>
+                {/* Our own controls (the browser's can't be restyled): see initPlayer() in src/scripts/site.ts.
+                    #t=0.1 makes browsers paint a first frame instead of a black box before play. */}
+                <video src={`${video}#t=0.1`} playsinline preload="metadata" title={`${title} video`} data-vp-video />
+                <button type="button" class="vp-big" data-vp-big aria-label="Play video">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" /></svg>
+                </button>
+                <div class="vp-bar" data-vp-bar>
+                  <button type="button" class="vp-btn" data-vp-toggle aria-label="Play">
+                    <span class="vp-i-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" /></svg></span><span class="vp-i-pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg></span>
+                  </button>
+                  <input type="range" class="vp-seek" data-vp-seek min="0" max="1000" step="1" value="0" aria-label="Seek" />
+                  <span class="vp-time" data-vp-time>0:00 / 0:00</span>
+                  <button type="button" class="vp-btn" data-vp-mute aria-label="Mute">
+                    <span class="vp-i-sound"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg></span><span class="vp-i-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" /><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" /></svg></span>
+                  </button>
+                  <button type="button" class="vp-btn" data-vp-full aria-label="Full screen">
+                    <span class="vp-i-enter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg></span><span class="vp-i-exit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg></span>
+                  </button>
+                </div>
+              </>
             ) : (
               <iframe
                 src={videoSrc}

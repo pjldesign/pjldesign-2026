@@ -394,21 +394,123 @@ function initRelated() {
 
 /* ---------- Vimeo: dim the page and hide the nav while a video plays ---------- */
 
+/* ---------- Case study: our own video player (direct video files) ---------- */
+
+const clock = (t: number) => {
+  if (!Number.isFinite(t)) return '0:00';
+  const m = Math.floor(t / 60);
+  const sec = Math.floor(t % 60);
+  return `${m}:${String(sec).padStart(2, '0')}`;
+};
+
+/** Wires the custom controls in .embed-container to the <video>. Returns a cleanup function. */
+function initPlayer(video: HTMLVideoElement, setMovie: (on: boolean) => void) {
+  const box = video.closest<HTMLElement>('.embed-container')!;
+  const q = <T extends HTMLElement>(sel: string) => box.querySelector<T>(sel)!;
+  const big = q<HTMLButtonElement>('[data-vp-big]');
+  const toggleBtn = q<HTMLButtonElement>('[data-vp-toggle]');
+  const seek = q<HTMLInputElement>('[data-vp-seek]');
+  const time = q<HTMLElement>('[data-vp-time]');
+  const muteBtn = q<HTMLButtonElement>('[data-vp-mute]');
+  const fullBtn = q<HTMLButtonElement>('[data-vp-full]');
+
+  let idleTimer: number | undefined;
+  const wake = () => {
+    box.classList.remove('is-idle');
+    clearTimeout(idleTimer);
+    if (!video.paused) idleTimer = window.setTimeout(() => box.classList.add('is-idle'), 2500);
+  };
+  const paint = () => {
+    const d = video.duration || 0;
+    const p = d ? (video.currentTime / d) * 1000 : 0;
+    seek.value = String(p);
+    seek.style.setProperty('--p', `${p / 10}%`);
+    seek.setAttribute('aria-valuetext', `${clock(video.currentTime)} of ${clock(d)}`);
+    time.textContent = `${clock(video.currentTime)} / ${clock(d)}`;
+  };
+  const labels = () => {
+    const playing = !video.paused && !video.ended;
+    box.classList.toggle('is-playing', playing);
+    toggleBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    big.setAttribute('aria-label', 'Play video');
+    muteBtn.setAttribute('aria-label', video.muted ? 'Unmute' : 'Mute');
+    box.classList.toggle('is-muted', video.muted);
+  };
+  const toggle = () => {
+    if (video.ended) video.currentTime = 0;
+    if (video.paused) void video.play().catch(() => {});
+    else video.pause();
+  };
+
+  const fsElement = () => document.fullscreenElement ?? (document as any).webkitFullscreenElement;
+  const toggleFull = () => {
+    const el = box as any;
+    if (fsElement()) {
+      (document.exitFullscreen ?? (document as any).webkitExitFullscreen)?.call(document);
+    } else if (el.requestFullscreen || el.webkitRequestFullscreen) {
+      (el.requestFullscreen ?? el.webkitRequestFullscreen).call(el);
+    } else {
+      (video as any).webkitEnterFullscreen?.(); // iPhone Safari only fullscreens the <video> itself
+    }
+  };
+  const onFull = () => box.classList.toggle('is-full', fsElement() === box);
+
+  const onPlay = () => {
+    setMovie(true);
+    labels();
+    wake();
+  };
+  const onPause = () => {
+    setMovie(false);
+    labels();
+    wake();
+  };
+  const onTime = () => paint();
+  const onSeek = () => {
+    if (video.duration) video.currentTime = (Number(seek.value) / 1000) * video.duration;
+    paint();
+  };
+  const onVol = () => labels();
+
+  video.addEventListener('play', onPlay);
+  video.addEventListener('pause', onPause);
+  video.addEventListener('ended', onPause);
+  video.addEventListener('timeupdate', onTime);
+  video.addEventListener('loadedmetadata', onTime);
+  video.addEventListener('durationchange', onTime);
+  video.addEventListener('volumechange', onVol);
+  video.addEventListener('click', toggle);
+  big.addEventListener('click', toggle);
+  toggleBtn.addEventListener('click', toggle);
+  seek.addEventListener('input', onSeek);
+  muteBtn.addEventListener('click', () => (video.muted = !video.muted));
+  fullBtn.addEventListener('click', toggleFull);
+  document.addEventListener('fullscreenchange', onFull);
+  document.addEventListener('webkitfullscreenchange', onFull);
+  box.addEventListener('pointermove', wake);
+  box.addEventListener('focusin', wake);
+  box.addEventListener('pointerdown', wake);
+  labels();
+  paint();
+
+  return () => {
+    clearTimeout(idleTimer);
+    document.removeEventListener('fullscreenchange', onFull);
+    document.removeEventListener('webkitfullscreenchange', onFull);
+    if (fsElement() === box) (document.exitFullscreen ?? (document as any).webkitExitFullscreen)?.call(document);
+    video.pause();
+  };
+}
+
 async function initVimeo() {
   const set = (on: boolean) => document.body.toggleAttribute('data-movie', on);
   // our own player (direct video file): same black-out + hidden menu on play
-  const file = document.querySelector<HTMLVideoElement>('.embed-container video');
+  const file = document.querySelector<HTMLVideoElement>('.embed-container [data-vp-video]');
   if (file) {
-    const on = () => set(true);
-    const off = () => set(false);
-    file.addEventListener('play', on);
-    file.addEventListener('pause', off);
-    file.addEventListener('ended', off);
+    const stopPlayer = initPlayer(file, set);
     onCleanup(() => {
       document.body.removeAttribute('data-movie');
-      file.removeEventListener('play', on);
-      file.removeEventListener('pause', off);
-      file.removeEventListener('ended', off);
+      stopPlayer();
     });
     return;
   }

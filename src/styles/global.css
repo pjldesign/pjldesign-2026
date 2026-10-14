@@ -545,6 +545,176 @@ html[data-scrolled] .hero .scroll-cue {
   background: #000;
 }
 
+/* Custom video controls (direct video files). The browser's own controls can't be recoloured, so these are our
+   own: icons in pjl orange that turn white on hover, an orange scrubber, a dark fade behind the bar.
+   State classes (is-playing, is-muted, is-full, is-idle) are set by initPlayer() in src/scripts/site.ts. */
+.vp-big {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  color: var(--color-pjl);
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+.vp-big svg {
+  width: 5.5rem;
+  height: 5.5rem;
+  filter: drop-shadow(0 0 6px rgb(0 0 0 / 0.45));
+  transition:
+    color 0.2s,
+    transform 0.15s;
+}
+.vp-big:active svg {
+  color: #fff;
+  transform: scale(0.94);
+}
+.embed-container.is-playing .vp-big {
+  opacity: 0;
+  pointer-events: none;
+}
+.vp-bar {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.25rem 1rem 0.5rem;
+  color: #fff;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.7));
+  transition: opacity 0.3s;
+}
+/* controls tuck away a moment after playback starts, and come back on any movement */
+.embed-container.is-playing.is-idle .vp-bar {
+  opacity: 0;
+}
+.embed-container.is-playing.is-idle {
+  cursor: none;
+}
+.vp-btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--color-pjl);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    transform 0.1s;
+}
+.vp-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.vp-btn:active {
+  color: #fff;
+  transform: scale(0.92);
+}
+@media (hover: hover) {
+  .vp-big:hover svg,
+  .vp-btn:hover {
+    color: #fff;
+  }
+}
+.vp-btn span {
+  display: grid;
+}
+/* two icons per toggle; the state class decides which shows */
+.vp-i-pause,
+.vp-i-muted,
+.vp-i-exit {
+  display: none !important;
+}
+.embed-container.is-playing .vp-i-play,
+.embed-container.is-muted .vp-i-sound,
+.embed-container.is-full .vp-i-enter {
+  display: none !important;
+}
+.embed-container.is-playing .vp-i-pause,
+.embed-container.is-muted .vp-i-muted,
+.embed-container.is-full .vp-i-exit {
+  display: grid !important;
+}
+.vp-time {
+  flex: none;
+  min-width: 6.5rem;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-align: right;
+}
+/* scrubber: pjl orange for what's played, translucent white for the rest. Square corners throughout. */
+.vp-seek {
+  --p: 0%;
+  flex: 1;
+  min-width: 0;
+  height: 1.5rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.vp-seek::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 0;
+  background: linear-gradient(to right, var(--color-pjl) var(--p), rgb(255 255 255 / 0.35) var(--p));
+}
+.vp-seek::-moz-range-track {
+  height: 4px;
+  border-radius: 0;
+  background: rgb(255 255 255 / 0.35);
+}
+.vp-seek::-moz-range-progress {
+  height: 4px;
+  border-radius: 0;
+  background: var(--color-pjl);
+}
+.vp-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 12px;
+  margin-top: -4px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-pjl);
+}
+.vp-seek::-moz-range-thumb {
+  width: 10px;
+  height: 12px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-pjl);
+}
+.vp-seek:focus-visible,
+.vp-btn:focus-visible,
+.vp-big:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+/* element fullscreen (so our controls stay): the 16:9 padding trick has to be switched off */
+.embed-container:fullscreen {
+  height: 100%;
+  padding-bottom: 0;
+}
+.embed-container:-webkit-full-screen {
+  height: 100%;
+  padding-bottom: 0;
+}
+@media (max-width: 40em) {
+  .vp-big svg {
+    width: 4rem;
+    height: 4rem;
+  }
+  .vp-time {
+    display: none;
+  }
+}
+
 /* Fullscreen image viewer */
 .lightbox {
   position: fixed;
