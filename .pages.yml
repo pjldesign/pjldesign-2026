@@ -116,5 +116,5 @@ content:
         type: string
 
       - name: notFoundLink
-        label: 'Page-not-found screen: link text (the arrow is added automatically)'
+        label: 'Page-not-found screen: link text'
         type: string
