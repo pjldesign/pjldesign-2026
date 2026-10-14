@@ -581,18 +581,32 @@ html[data-scrolled] .hero .scroll-cue {
   position: absolute;
   display: grid;
   place-items: center;
+  /* no visible button: just a white caret / X that turns pjl orange on hover. The 3rem box stays as the
+     click and tap area. */
   width: 3rem;
   height: 3rem;
-  border-radius: 9999px;
   color: #fff;
-  background: var(--color-pjl);
+  background: transparent;
+  cursor: pointer;
   transition:
-    background-color 0.2s,
-    color 0.2s;
+    color 0.2s,
+    transform 0.1s;
 }
-.lb-btn:hover {
-  background: #fff;
+.lb-btn svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke-width: 2;
+  /* a faint shadow keeps the icon readable when a light photo is behind it */
+  filter: drop-shadow(0 0 3px rgb(0 0 0 / 0.45));
+}
+@media (hover: hover) {
+  .lb-btn:hover {
+    color: var(--color-pjl);
+  }
+}
+.lb-btn:active {
   color: var(--color-pjl);
+  transform: scale(0.92);
 }
 /* keep the viewer's buttons clear of the notch (these beat the layout's left-4 / right-4) */
 .lb-btn[data-lb-prev] {
