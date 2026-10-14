@@ -28,6 +28,23 @@
   font-display: block;
 }
 
+/* Same Light file with the vertical metrics trimmed. The font ships with ascent 1.166 + descent 0.340
+   (a 1.5em-tall content area), and that content area is what a text selection highlights. At the big
+   headline sizes the line-height is only ~1.03em, so each line's highlight spilled half a line into its
+   neighbours and painted over the descenders above. Here the content area is 1.025em, so highlights
+   stack edge to edge. Ascent minus descent changes, so users of this family add a small top offset
+   to put the text back where it was (see .notfound-copy). */
+@font-face {
+  font-family: 'Neue Haas Unica Tight';
+  src: url('/fonts/NeueHaasUnicaW1G-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: block;
+  ascent-override: 77.5%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);
@@ -41,9 +58,15 @@
   body[data-movie] {
     background: #000;
   }
+  /* Selected text: white on black everywhere (white on white-ish pages is invisible only for the movie
+     pages, which are black, so they invert). */
   ::selection {
-    background: var(--color-pjl);
+    background: #000;
     color: #fff;
+  }
+  body[data-movie] ::selection {
+    background: #fff;
+    color: #000;
   }
   a:focus-visible,
   button:focus-visible,
@@ -345,8 +368,12 @@ html[data-preloading] {
     line-height: 8.2rem;
   }
 }
-/* 404 screen: same size scale as the home intro above, in pjl orange, Light */
+/* 404 screen: same size scale as the home intro above, Light */
 .notfound-copy {
+  font-family: 'Neue Haas Unica Tight', var(--font-sans);
+  /* the tight family sits the glyphs 0.15em higher in the line box; put them back */
+  position: relative;
+  top: 0.15em;
   color: var(--color-pjl);
   font-weight: 300;
   font-size: 2.75rem;
@@ -354,6 +381,15 @@ html[data-preloading] {
 }
 .notfound-copy a {
   transition: color 0.3s;
+}
+/* Headline orange; the sentence and link take the case-study description grey (#666 phone, #888 tablet up). */
+p.notfound-copy {
+  color: #666;
+}
+@media (min-width: 40.0625em) {
+  p.notfound-copy {
+    color: #888;
+  }
 }
 .notfound-underline {
   text-decoration: underline;
