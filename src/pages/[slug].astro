@@ -38,9 +38,11 @@ const related = relatedPool(project, all);
     <!-- Side by side on desktop (title left, summary right); stacked on phones and tablets. -->
     {/* Same two-column grid and gap as the image grid below (grid-cols-2, gap-6), so the summary's
         left edge is exactly the second image column's. Don't give this its own column system. */}
-    <div class="grid lg:grid-cols-2 lg:gap-x-6">
+    {/* The space before the images belongs to this whole block (mb-*), not to the summary: when the title
+        is taller than the summary (a two-line title, a short description) the gap used to disappear. */}
+    <div class="mb-12 grid sm:mb-[68px] lg:grid-cols-2 lg:gap-x-6">
       <h1 class="mt-11 mb-3 text-[1.75rem] leading-[1.25] text-pjl sm:mt-[60px] sm:mb-7 sm:text-[2rem] sm:font-light sm:leading-9 lg:mt-[27px] lg:mb-0 lg:text-[6rem] lg:leading-[6.25rem]">{title}</h1>
-      <div class="project-summary pt-2 pb-12 font-light text-[#666] sm:pb-[68px] sm:text-[#888] lg:pt-[38.5px]">
+      <div class="project-summary pt-2 font-light text-[#666] sm:text-[#888] lg:pt-[38.5px]">
         <Content />
         {
           siteLink && siteLinkType && (

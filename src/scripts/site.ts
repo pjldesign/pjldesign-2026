@@ -2,6 +2,10 @@
 // Runs once; per-page setup re-runs on every Astro page swap (astro:page-load).
 
 const html = document.documentElement;
+// Defined first on purpose: the loading check below runs while this file is still being evaluated,
+// and a `const` can't be used before the line that declares it.
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 // The logo pulses while a page loads and stops when the last image you can currently see has loaded
 // (the same idea as the old site's imagesLoaded). It works for both ways a page can arrive:
@@ -21,17 +25,25 @@ function stopLoading() {
   delete html.dataset.loading;
 }
 
-/** Resolves once every image the visitor can currently see has loaded (or failed). */
+/**
+ * Resolves once every image the browser is currently downloading for this page has finished.
+ * Lazy images only count once the browser has actually started them (currentSrc is set); each
+ * browser picks its own "near the screen" distance, so guessing it ourselves made the logo wait
+ * for images that never started. We look again after each batch to catch late starters.
+ */
 async function visibleImagesLoaded() {
-  const vh = window.innerHeight;
-  const imgs = [...document.querySelectorAll<HTMLImageElement>('main img')].filter((img) => {
-    if (!img.getAttribute('src')) return false; // viewer slides hold data-src until opened
-    if (img.closest('[data-slide]:not([data-current])')) return false; // slideshow images waiting their turn
-    if (img.offsetParent === null) return false; // hidden, e.g. spare "Related" cards
-    const r = img.getBoundingClientRect();
-    return img.loading === 'eager' || (r.top < vh * 1.5 && r.bottom > 0);
-  });
-  await Promise.all(imgs.map((img) => imageReady(img, 8000)));
+  await sleep(150); // give the browser a moment to start the lazy images that are near the screen
+  for (let pass = 0; pass < 5; pass++) {
+    const pending = [...document.querySelectorAll<HTMLImageElement>('main img')].filter(
+      (img) =>
+        img.getAttribute('src') && // viewer slides hold data-src until opened
+        !img.complete && // still downloading (finished or broken images are complete)
+        (img.loading === 'eager' || img.currentSrc) && // lazy ones count only once started
+        !img.closest('[data-slide]:not([data-current])'), // slideshow images waiting their turn
+    );
+    if (!pending.length) return;
+    await Promise.all(pending.map((img) => imageReady(img, 8000)));
+  }
 }
 async function endLoading() {
   await visibleImagesLoaded();
@@ -44,13 +56,10 @@ else endLoading();
 // a page restored from the browser's back/forward cache comes back mid-pulse, with no new load event
 window.addEventListener('pageshow', (e) => e.persisted && stopLoading());
 
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-
 /** Resolves when the image has loaded (or failed, or `ms` has passed). */
 function imageReady(img: HTMLImageElement, ms = 6000) {
   return new Promise<void>((resolve) => {
-    if (img.complete && img.naturalWidth) return resolve();
+    if (img.complete) return resolve(); // loaded, or already failed: either way there is nothing to wait for
     img.addEventListener('load', () => resolve(), { once: true });
     img.addEventListener('error', () => resolve(), { once: true });
     setTimeout(resolve, ms);
