@@ -6,7 +6,7 @@ order: 15
 cover: "https://pjl-site-media.s3.amazonaws.com/galleries/56/1229_hhg_small.gif"
 zoom: 100
 images: ["https://pjl-site-media.s3.amazonaws.com/galleries/56/1241_hhg_top4.gif","https://pjl-site-media.s3.amazonaws.com/galleries/56/1279_HHG_PORTFOLIO_COMP_2.gif"]
-video: "https://player.vimeo.com/video/444137854"
+video: "https://media.pjl.design/hhg-interstitials.mp4"
 siteLink: null
 siteLinkType: null
 draft: false

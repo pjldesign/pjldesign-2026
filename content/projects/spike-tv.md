@@ -6,7 +6,7 @@ order: 20
 cover: "https://pjl-site-media.s3.amazonaws.com/galleries/44/722_spike_tv14.jpg"
 zoom: 150
 images: ["https://pjl-site-media.s3.amazonaws.com/galleries/44/711_spike_tv2.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/712_spike_tv4.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/710_spike_tv5.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/761_spike_tv14.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/716_spike_tv8.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/715_spike_tv7.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/717_spike_tv9.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/720_spike_tv12.jpg","https://pjl-site-media.s3.amazonaws.com/galleries/44/721_spike_tv13.jpg"]
-video: "https://player.vimeo.com/video/287845995"
+video: "https://media.pjl.design/time-kalief-browder.mp4"
 siteLink: null
 siteLinkType: null
 draft: false
