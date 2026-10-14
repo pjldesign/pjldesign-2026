@@ -18,14 +18,14 @@
     url('/fonts/NeueHaasUnicaW1G-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 @font-face {
   font-family: 'Neue Haas Unica';
   src: url('/fonts/NeueHaasUnicaW1G-Light.woff') format('woff');
   font-weight: 300;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @layer base {

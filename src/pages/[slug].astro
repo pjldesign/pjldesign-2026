@@ -56,7 +56,9 @@ const related = relatedPool(project, all);
           {images.map((src, i) => (
             <li>
               <button type="button" class="block w-full cursor-zoom-in" data-thumb={i} aria-label={`View image ${i + 1} of ${images.length} full screen`}>
-                <img src={src} alt={`${title}, image ${i + 1}`} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" class="block h-auto w-full" />
+                {/* width/height give the browser the 10:7 shape before the file arrives. Without them an unloaded image
+    is 0px tall, every image looks "on screen", and lazy loading downloads the whole page at once. */}
+                <img src={src} alt={`${title}, image ${i + 1}`} width="1000" height="700" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" class="block h-auto w-full" />
               </button>
             </li>
           ))}

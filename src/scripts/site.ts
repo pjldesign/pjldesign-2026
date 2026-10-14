@@ -3,10 +3,13 @@
 
 const html = document.documentElement;
 
-// The logo pulses while a page loads, and stops when the page has finished loading. That is all:
-//  - first / direct visit: stop on the browser's own `load` event (or immediately if it already fired)
-//  - clicking through to another page: stop as soon as the new page is swapped in (astro:after-swap)
-// A failsafe timer means a stalled request can never leave it pulsing forever.
+// The logo pulses while a page loads and stops when the last image you can currently see has loaded
+// (the same idea as the old site's imagesLoaded). It works for both ways a page can arrive:
+//  - direct visit: starts here, checked as soon as the document is ready
+//  - clicking through (page transitions): started on before-preparation, re-armed after the swap
+//    (Astro clears the <html> attributes when it swaps pages), checked on astro:page-load
+// Images further down the page load lazily as you scroll, so they don't count. A failsafe timer
+// means a stalled image can never leave the logo pulsing forever.
 let loadingFailsafe: number | undefined;
 function startLoading(maxMs: number) {
   html.dataset.loading = '';
@@ -17,9 +20,27 @@ function stopLoading() {
   clearTimeout(loadingFailsafe);
   delete html.dataset.loading;
 }
+
+/** Resolves once every image the visitor can currently see has loaded (or failed). */
+async function visibleImagesLoaded() {
+  const vh = window.innerHeight;
+  const imgs = [...document.querySelectorAll<HTMLImageElement>('main img')].filter((img) => {
+    if (!img.getAttribute('src')) return false; // viewer slides hold data-src until opened
+    if (img.closest('[data-slide]:not([data-current])')) return false; // slideshow images waiting their turn
+    if (img.offsetParent === null) return false; // hidden, e.g. spare "Related" cards
+    const r = img.getBoundingClientRect();
+    return img.loading === 'eager' || (r.top < vh * 1.5 && r.bottom > 0);
+  });
+  await Promise.all(imgs.map((img) => imageReady(img, 8000)));
+}
+async function endLoading() {
+  await visibleImagesLoaded();
+  stopLoading();
+}
+
 startLoading(5000);
-if (document.readyState === 'complete') stopLoading();
-else window.addEventListener('load', stopLoading, { once: true });
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', endLoading, { once: true });
+else endLoading();
 // a page restored from the browser's back/forward cache comes back mid-pulse, with no new load event
 window.addEventListener('pageshow', (e) => e.persisted && stopLoading());
 
@@ -172,8 +193,9 @@ document.addEventListener('astro:before-preparation', () => {
   setContact(false);
   setMenu(false);
 });
-// the new page is on screen: the navigation is done, stop pulsing right away
-document.addEventListener('astro:after-swap', stopLoading);
+// Astro just cleared the <html> attributes (including data-loading) while swapping in the new page.
+// Keep pulsing until its images have loaded; astro:page-load below ends it.
+document.addEventListener('astro:after-swap', () => startLoading(10000));
 document.addEventListener('astro:before-swap', () => {
   teardown.forEach((fn) => fn());
   teardown = [];
@@ -348,4 +370,5 @@ document.addEventListener('astro:page-load', () => {
   initLightbox();
   initRelated();
   initVimeo();
+  endLoading();
 });
