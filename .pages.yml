@@ -116,5 +116,9 @@ content:
         type: string
 
       - name: notFoundLink
-        label: 'Page-not-found screen: link text'
+        label: 'Page-not-found screen: phrase after the sentence (e.g. Back to the work!)'
+        type: string
+
+      - name: notFoundLinkUnderline
+        label: 'Page-not-found screen: the words that are the clickable, underlined link (must match the text above exactly; empty = whole phrase is the link, no underline)'
         type: string

@@ -1,6 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../lib/site';
+
+// Only the chosen words are the (underlined) link; the rest of the phrase is plain text. If those words
+// are empty or not found in the phrase, the whole phrase becomes the link, without an underline.
+const at = site.notFoundLinkUnderline ? site.notFoundLink.indexOf(site.notFoundLinkUnderline) : -1;
+const before = at < 0 ? '' : site.notFoundLink.slice(0, at);
+const under = at < 0 ? site.notFoundLink : site.notFoundLinkUnderline;
+const after = at < 0 ? '' : site.notFoundLink.slice(at + under.length);
 ---
 
 <Base
@@ -15,7 +22,7 @@ import { site } from '../lib/site';
     <h1 class="notfound-copy">{site.notFoundTitle}</h1>
     <p class="notfound-copy">
       {site.notFoundText}{' '}
-      <a href="/">{site.notFoundLink}</a>
+      {before}<a href="/" class:list={[at >= 0 && 'notfound-underline']}>{under}</a>{after}
     </p>
   </div>
 </Base>
