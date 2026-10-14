@@ -86,9 +86,11 @@ const links = [
           aria-controls="nav-list"
           aria-label="Menu"
         >
-          <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg class="menu-icon" width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M0 2h22M0 9h22M0 16h22" />
           </svg>
+          {/* phones only: while the contact panel is open the hamburger reads "Close" and closes it */}
+          <span class="menu-close" aria-hidden="true">Close</span>
         </button>
 
         <ul id="nav-list" class="nav-list mt-[18px] w-full flex-col sm:mt-0 sm:w-auto sm:flex-row sm:items-center">

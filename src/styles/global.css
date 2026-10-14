@@ -155,6 +155,26 @@ body[data-movie] .nav-wrapper {
   color: var(--color-ink);
 }
 
+/* Phones: the hamburger turns into the word Close while the contact panel is open (the Contact link itself
+   is hidden inside the collapsed menu at that size). Same type as the nav links. */
+.menu-close {
+  display: none;
+  font-weight: 300;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+}
+.nav-wrapper[data-contact-open] [data-menu-toggle] .menu-icon {
+  display: none;
+}
+.nav-wrapper[data-contact-open] [data-menu-toggle] .menu-close {
+  display: block;
+}
+@media (hover: hover) {
+  [data-menu-toggle]:hover .menu-close {
+    color: var(--color-ink);
+  }
+}
+
 /* Smaller text for the contact form's own button and messages */
 .form-link {
   color: var(--color-pjl);
@@ -647,7 +667,7 @@ html[data-scrolled] .hero .scroll-cue {
   color: #fff;
   text-align: right;
 }
-/* scrubber: pjl orange for what's played, translucent white for the rest. Square corners throughout. */
+/* scrubber: pjl orange for what's played, translucent white for the rest. Square corners, invisible handle. */
 .vp-seek {
   --p: 0%;
   flex: 1;
@@ -676,19 +696,20 @@ html[data-scrolled] .hero .scroll-cue {
 }
 .vp-seek::-webkit-slider-thumb {
   -webkit-appearance: none;
+  /* invisible handle: still the same size, so it stays easy to grab; the orange fill shows progress */
   width: 10px;
   height: 12px;
   margin-top: -4px;
   border: 0;
   border-radius: 0;
-  background: var(--color-pjl);
+  background: transparent;
 }
 .vp-seek::-moz-range-thumb {
   width: 10px;
   height: 12px;
   border: 0;
   border-radius: 0;
-  background: var(--color-pjl);
+  background: transparent;
 }
 .vp-seek:focus-visible,
 .vp-btn:focus-visible,

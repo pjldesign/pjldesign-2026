@@ -155,13 +155,19 @@ function setContact(open: boolean) {
   if (!nav || !btn) return;
   nav.toggleAttribute('data-contact-open', open);
   btn.setAttribute('aria-expanded', String(open));
+  document
+    .querySelector('[data-menu-toggle]')
+    ?.setAttribute('aria-label', open ? 'Close contact' : 'Menu');
   btn.querySelector<HTMLElement>('[data-label-closed]')!.hidden = open;
   btn.querySelector<HTMLElement>('[data-label-open]')!.hidden = !open;
   if (open) nav.querySelector<HTMLInputElement>('#name')?.focus({ preventScroll: true });
 }
 document.addEventListener('click', (e) => {
   const t = e.target as HTMLElement;
-  if (t.closest('[data-menu-toggle]')) {
+  if (t.closest('[data-menu-toggle]') && document.querySelector('[data-nav][data-contact-open]')) {
+    // phones: with the contact panel open the hamburger reads "Close" and just closes the panel
+    setContact(false);
+  } else if (t.closest('[data-menu-toggle]')) {
     const open = !document.querySelector('[data-nav]')!.hasAttribute('data-menu-open');
     if (open) setContact(false);
     setMenu(open);
