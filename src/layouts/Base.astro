@@ -124,7 +124,7 @@ const links = [
               <textarea class="contact-field" id="message" name="message" rows="3" placeholder="Message..." required></textarea>
               <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hidden" />
               <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-                <button type="submit" class="form-link cursor-pointer border border-pjl px-6 py-2 hover:border-ink disabled:opacity-50" data-contact-submit>Submit</button>
+                <button type="submit" class="form-link submit-cta cursor-pointer px-6 py-2 disabled:opacity-50" data-contact-submit>Submit</button>
                 <p class="!text-ink form-link" role="status" aria-live="polite" data-contact-status></p>
               </div>
               <noscript><p class="form-link mt-3">Or email <a href={`mailto:${CONTACT_EMAIL}`} class="underline">{CONTACT_EMAIL}</a>.</p></noscript>

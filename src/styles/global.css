@@ -130,6 +130,18 @@ body[data-movie] .nav-wrapper {
 .form-link:focus-visible {
   color: var(--color-ink);
 }
+/* Submit button: white text on a pjl-orange fill, 2px corners. Hover swaps the fill to ink. */
+.form-link.submit-cta {
+  color: #fff;
+  background-color: var(--color-pjl);
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+.form-link.submit-cta:hover,
+.form-link.submit-cta:focus-visible {
+  color: #fff;
+  background-color: var(--color-ink);
+}
 
 /* Phones: links collapse into a hamburger menu */
 .nav-list {
