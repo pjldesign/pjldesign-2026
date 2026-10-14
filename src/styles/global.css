@@ -54,6 +54,15 @@
     background: #fff;
     color: var(--color-ink);
     transition: background-color 0.3s;
+    /* Short pages (the 404) still fill the screen, so the footer sits at the bottom instead of floating
+       mid-screen. The header is fixed, so only <main> and <footer> take part. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  body > main {
+    flex: 1 0 auto;
   }
   body[data-movie] {
     background: #000;

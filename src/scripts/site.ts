@@ -100,7 +100,9 @@ function initNavState() {
   // Cheap enough (two comparisons) to run on every scroll event, so no frame-throttling needed.
   const update = () => {
     const y = window.scrollY;
-    const nextActive = active ? y > threshold - DEAD_ZONE : y > threshold;
+    // (clamped at 0: a page with no trigger element has threshold 0, and without the clamp the dead zone
+    // would keep a header that arrived collapsed active at the very top of the page)
+    const nextActive = active ? y > Math.max(threshold - DEAD_ZONE, 0) : y > threshold;
     if (nextActive !== active) {
       active = nextActive;
       nav.toggleAttribute('data-active', active);
