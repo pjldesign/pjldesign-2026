@@ -22,7 +22,7 @@ Only the `www` CNAME and the bare-domain forwarding change.
 | Row | Value | Verdict |
 |---|---|---|
 | CNAME `www` | `pjldesign-2026.pages.dev` | **Done.** This is the new site. |
-| A `@` (two rows) | `104.19.232.38`, `104.19.233.38` | Still the old MODX edge. **Replace with the bare-domain forward (Phase 1, step 3) before cancelling MODX.** |
+| A `@` (two rows) | `104.19.232.38`, `104.19.233.38` | The old MODX edge. Keep for now. **Replace via Phase 1b before cancelling MODX.** (GoDaddy's own forward swaps these for `15.197.142.173` / `3.33.152.147`, which have no HTTPS. Don't use it.) |
 | NS `@` (two rows) | `ns37/ns38.domaincontrol.com` | **Keep.** GoDaddy's own nameservers. |
 | MX, TXT (SPF, DMARC) | `secureserver.net` mail records | **Keep.** This is your email. |
 | CNAME `email` | `email.secureserver.net` | **Keep.** The GoDaddy webmail shortcut. |
@@ -34,7 +34,8 @@ Only the `www` CNAME and the bare-domain forwarding change.
 | CNAME `blog` | `pjl.design` | Dead (shows a MODX error page). Safe to delete during final cleanup. |
 
 **Important:** the bare `pjl.design` currently works only because the old MODX server redirects it to
-`www`. Once MODX is cancelled that stops. Set up the GoDaddy forward (Phase 1, step 3) first.
+`www`. Once MODX is cancelled that stops. GoDaddy's forwarding can't replace it (it has no HTTPS), so
+**complete Phase 1b before cancelling MODX.**
 
 ## Phase 0: Pre-flight (about 10 minutes, nothing changes yet)
 
@@ -52,9 +53,10 @@ Only the `www` CNAME and the bare-domain forwarding change.
    Enter `www.pjl.design`. Cloudflare shows the CNAME target (`pjldesign-2026.pages.dev`).
 2. **GoDaddy DNS** (My Products > `pjl.design` > DNS): edit the **CNAME** named `www`.
    Value: `pjldesign-2026.pages.dev`. TTL: 10 minutes. Do not touch any MX or TXT row.
-3. **GoDaddy forwarding** (domain settings > Forwarding): forward `pjl.design` to
-   `https://www.pjl.design`, type **Permanent (301)**, forward only. Accept the warning that it
-   replaces the A records.
+3. ~~GoDaddy forwarding for the bare domain~~ **Tried 2026-10-13; it does not work.** GoDaddy's
+   forwarder only answers plain `http://`. It never accepted secure `https://` connections (tested
+   for 5+ minutes on both of its servers), so `https://pjl.design` failed to connect. The bare
+   domain was rolled back to the old A records. Use **Phase 1b** below instead.
 4. Wait for the Cloudflare custom domain to show **Active** (usually a few minutes).
 
 **Verify** (ask Claude to run these, or check in a browser):
@@ -67,6 +69,23 @@ Only the `www` CNAME and the bare-domain forwarding change.
 **Rollback (if anything looks wrong):** set the `www` CNAME value back to `pjl.design`, remove the
 forwarding, and re-add two A records for the bare `pjl.design`: `104.19.232.38` and `104.19.233.38`.
 MODX is still running at this point, so the old site comes straight back.
+
+## Phase 1b: Make the bare `pjl.design` work without MODX (before cancelling it)
+
+The problem: GoDaddy DNS can't point a bare domain at Cloudflare Pages, and GoDaddy's forwarding has
+no HTTPS. The clean fix is to let **Cloudflare host the domain's DNS** (free), which also gives the
+bare domain a proper certificate and redirect. Email stays at GoDaddy. This is the one step that
+touches email-adjacent records, so do it calmly, not in a rush:
+
+1. In Cloudflare, add `pjl.design` as a site (free plan). Let it scan the existing records.
+2. **Before changing anything at GoDaddy**, compare Cloudflare's imported list with the inventory
+   above, row by row. Every MX, TXT (SPF, DMARC, `D3314872`), SRV and `_domainkey` / `email` CNAME
+   must be present and set to **DNS only** (grey cloud), never proxied. Ask Claude to verify with `dig`.
+3. Add the bare-domain redirect to `https://www.pjl.design` (a Cloudflare Redirect Rule) and make sure
+   `www` still points to `pjldesign-2026.pages.dev`.
+4. At GoDaddy, change the domain's **nameservers** to the two Cloudflare gives you.
+5. Verify: the new site, `http://` and `https://` on both `pjl.design` and `www.pjl.design`, and send
+   email both ways. To undo, switch the nameservers back to GoDaddy's (`ns37` / `ns38.domaincontrol.com`).
 
 ## Phase 2: Watch (48 hours)
 
