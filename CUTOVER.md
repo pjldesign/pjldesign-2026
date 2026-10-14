@@ -55,8 +55,8 @@ Only the `www` CNAME and the bare-domain forwarding change.
    Value: `pjldesign-2026.pages.dev`. TTL: 10 minutes. Do not touch any MX or TXT row.
 3. ~~GoDaddy forwarding for the bare domain~~ **Tried 2026-10-13; it does not work.** GoDaddy's
    forwarder only answers plain `http://`. It never accepted secure `https://` connections (tested
-   for 5+ minutes on both of its servers), so `https://pjl.design` failed to connect. The bare
-   domain was rolled back to the old A records. Use **Phase 1b** below instead.
+   for 5+ minutes on both of its servers), so `https://pjl.design` failed to connect. Remove the
+   forward and put the old A records back (see Rollback below) until **Phase 1b** is done.
 4. Wait for the Cloudflare custom domain to show **Active** (usually a few minutes).
 
 **Verify** (ask Claude to run these, or check in a browser):
