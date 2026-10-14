@@ -10,6 +10,10 @@ const schema = z.object({
   heroImages: z.array(z.string().min(1)).min(1),
   /** footer phone number; leave empty to hide it */
   phone: z.string().default(''),
+  /** the "page not found" screen */
+  notFoundTitle: z.string().min(1).default('Page not found'),
+  notFoundText: z.string().default('That page doesn’t exist, or it has moved.'),
+  notFoundLink: z.string().default('Back to the work'),
 });
 
 export const site = schema.parse(raw);

@@ -345,6 +345,39 @@ html[data-preloading] {
     line-height: 8.2rem;
   }
 }
+/* 404 screen: same size scale as the home intro above, in pjl orange, Light */
+.notfound-copy {
+  color: var(--color-pjl);
+  font-weight: 300;
+  font-size: 2.75rem;
+  line-height: 3rem;
+}
+.notfound-copy a {
+  transition: color 0.3s;
+}
+.notfound-copy a:hover,
+.notfound-copy a:focus-visible {
+  color: var(--color-ink);
+}
+@media (min-width: 40.0625em) {
+  .notfound-copy {
+    font-size: 5rem;
+    line-height: 5.25rem;
+  }
+}
+@media (min-width: 64em) {
+  .notfound-copy {
+    font-size: 6rem;
+    line-height: 6.2rem;
+    max-width: 70%;
+  }
+}
+@media (min-width: 90.0625em) {
+  .notfound-copy {
+    font-size: 8rem;
+    line-height: 8.2rem;
+  }
+}
 .hero-slides {
   position: absolute;
   inset: 0;

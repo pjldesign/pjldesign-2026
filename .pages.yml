@@ -106,3 +106,15 @@ content:
       - name: phone
         label: Footer phone number (leave empty to hide)
         type: string
+
+      - name: notFoundTitle
+        label: 'Page-not-found screen: big headline'
+        type: string
+
+      - name: notFoundText
+        label: 'Page-not-found screen: sentence under the headline'
+        type: string
+
+      - name: notFoundLink
+        label: 'Page-not-found screen: link text (the arrow is added automatically)'
+        type: string

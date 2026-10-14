@@ -9,5 +9,8 @@
     "https://pjl-site-media.s3.amazonaws.com/galleries/3/1079_707_382_brick_city03.jpg",
     "https://pjl-site-media.s3.amazonaws.com/galleries/3/1146_1088_IMG_0335_low.jpg"
   ],
-  "phone": "+01 212.203.3566"
+  "phone": "+01 212.203.3566",
+  "notFoundTitle": "Slow your roll...",
+  "notFoundText": "That page doesn’t exist, or it has moved.",
+  "notFoundLink": "Back to the work"
 }
