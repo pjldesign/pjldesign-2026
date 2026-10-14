@@ -566,8 +566,8 @@ html[data-scrolled] .hero .scroll-cue {
 }
 
 /* Custom video controls (direct video files). The browser's own controls can't be recoloured, so these are our
-   own: a white big play button that turns pjl orange on hover (control-bar icons are orange, white on hover),
-   an orange scrubber, a dark fade behind the bar.
+   own: white icons that turn pjl orange on hover (the big play button and the bar buttons alike), an orange
+   scrubber, a dark fade behind the bar.
    State classes (is-playing, is-muted, is-full, is-idle) are set by initPlayer() in src/scripts/site.ts. */
 .vp-big {
   position: absolute;
@@ -620,7 +620,7 @@ html[data-scrolled] .hero .scroll-cue {
   flex: none;
   width: 2.5rem;
   height: 2.5rem;
-  color: var(--color-pjl);
+  color: #fff;
   background: transparent;
   cursor: pointer;
   transition:
@@ -632,7 +632,7 @@ html[data-scrolled] .hero .scroll-cue {
   height: 1.5rem;
 }
 .vp-btn:active {
-  color: #fff;
+  color: var(--color-pjl);
   transform: scale(0.92);
 }
 @media (hover: hover) {
@@ -640,7 +640,7 @@ html[data-scrolled] .hero .scroll-cue {
     color: var(--color-pjl);
   }
   .vp-btn:hover {
-    color: #fff;
+    color: var(--color-pjl);
   }
 }
 .vp-btn span {
