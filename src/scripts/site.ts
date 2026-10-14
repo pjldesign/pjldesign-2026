@@ -78,8 +78,11 @@ function initNavState() {
   const isHome = document.body.dataset.page === 'home';
   const DEAD_ZONE = 24; // px of scroll between "turn on" and "turn off", so it can't chatter at the edge
   let threshold = 0;
-  let active = false;
-  let scrolled = false;
+  // Start from what the page actually shows, not from "false": the header persists between pages, so
+  // after a click-through it can still carry the previous page's solid/collapsed look. Starting
+  // from the real attribute makes the first update() correct it.
+  let active = nav.hasAttribute('data-active');
+  let scrolled = html.hasAttribute('data-scrolled');
 
   // Layout is measured only when the page changes size, never while scrolling.
   const measure = () => {
