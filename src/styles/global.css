@@ -160,12 +160,12 @@ body[data-movie] .nav-wrapper {
     height: 2.5rem;
   }
 }
-/* Logo collapse timing. Three letters x (fade + stagger) = ~0.26s in total, finishing just
-   after the nav bar's own 0.2s fade. Long delays made the letters trail the bar and hang when
-   the scroll direction reversed, so keep --logo-step small. */
+/* Logo collapse timing. Three letters x (fade + stagger) = ~0.43s in total: halfway between the
+   original 0.6s (too slow, janky) and a 0.26s version (too quick). Very long delays made the letters
+   trail the bar and hang when the scroll direction reversed, so keep --logo-step modest. */
 .logo-svg {
-  --logo-dur: 0.18s;
-  --logo-step: 0.04s;
+  --logo-dur: 0.24s;
+  --logo-step: 0.095s;
   --logo-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .logo-svg g {
