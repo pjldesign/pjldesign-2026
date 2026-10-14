@@ -566,7 +566,8 @@ html[data-scrolled] .hero .scroll-cue {
 }
 
 /* Custom video controls (direct video files). The browser's own controls can't be recoloured, so these are our
-   own: icons in pjl orange that turn white on hover, an orange scrubber, a dark fade behind the bar.
+   own: a white big play button that turns pjl orange on hover (control-bar icons are orange, white on hover),
+   an orange scrubber, a dark fade behind the bar.
    State classes (is-playing, is-muted, is-full, is-idle) are set by initPlayer() in src/scripts/site.ts. */
 .vp-big {
   position: absolute;
@@ -574,21 +575,21 @@ html[data-scrolled] .hero .scroll-cue {
   display: grid;
   place-items: center;
   width: 100%;
-  color: var(--color-pjl);
+  color: #fff;
   background: transparent;
   cursor: pointer;
   transition: opacity 0.3s;
 }
 .vp-big svg {
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 3.67rem;
+  height: 3.67rem;
   filter: drop-shadow(0 0 6px rgb(0 0 0 / 0.45));
   transition:
     color 0.2s,
     transform 0.15s;
 }
 .vp-big:active svg {
-  color: #fff;
+  color: var(--color-pjl);
   transform: scale(0.94);
 }
 .embed-container.is-playing .vp-big {
@@ -635,7 +636,9 @@ html[data-scrolled] .hero .scroll-cue {
   transform: scale(0.92);
 }
 @media (hover: hover) {
-  .vp-big:hover svg,
+  .vp-big:hover svg {
+    color: var(--color-pjl);
+  }
   .vp-btn:hover {
     color: #fff;
   }
@@ -728,8 +731,8 @@ html[data-scrolled] .hero .scroll-cue {
 }
 @media (max-width: 40em) {
   .vp-big svg {
-    width: 4rem;
-    height: 4rem;
+    width: 2.67rem;
+    height: 2.67rem;
   }
   .vp-time {
     display: none;
