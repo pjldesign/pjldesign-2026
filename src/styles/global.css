@@ -131,7 +131,7 @@ body[data-movie] .nav-wrapper {
   color: var(--color-ink);
 }
 /* Submit button: white text on a pjl-orange fill, 2px corners.
-   Hover (mouse only, so it never sticks after a tap) and press both swap the fill to ink; press also
+   Hover (mouse only, so it never sticks after a tap) and press both swap the fill to black; press also
    sinks slightly. Keyboard focus gets an outline instead of a colour change. Disabled (mid-send) is inert. */
 .form-link.submit-cta {
   color: #fff;
@@ -144,17 +144,17 @@ body[data-movie] .nav-wrapper {
 @media (hover: hover) {
   .form-link.submit-cta:hover:not(:disabled) {
     color: #fff;
-    background-color: var(--color-ink);
+    background-color: #000;
   }
 }
 .form-link.submit-cta:focus-visible {
   color: #fff;
-  outline: 2px solid var(--color-ink);
+  outline: 2px solid #000;
   outline-offset: 2px;
 }
 .form-link.submit-cta:active:not(:disabled) {
   color: #fff;
-  background-color: var(--color-ink);
+  background-color: #000;
   transform: scale(0.97);
 }
 .form-link.submit-cta:disabled {
