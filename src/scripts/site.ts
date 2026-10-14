@@ -403,7 +403,11 @@ async function initVimeo() {
   player.on('play', () => set(true));
   player.on('pause', () => set(false));
   player.on('ended', () => set(false));
-  onCleanup(() => player.destroy().catch(() => {}));
+  onCleanup(() => {
+    // leaving mid-playback must not leave the page black with the nav hidden (the old site did this too)
+    document.body.removeAttribute('data-movie');
+    player.destroy().catch(() => {});
+  });
 }
 
 /* ---------- Boot ---------- */
