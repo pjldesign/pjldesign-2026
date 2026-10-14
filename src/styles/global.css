@@ -193,9 +193,14 @@ body[data-movie] .nav-wrapper {
   0%, 100% { opacity: 0; }
   15%, 85% { opacity: 1; }
 }
-html[data-loading] .logo-svg g,
-.logo-svg:hover g {
+html[data-loading] .logo-svg g {
   animation: logo-beat 2s cubic-bezier(0.6, 1, 1, 1) infinite;
+}
+/* the hover pulse only where there is a real pointer: on phones a tap leaves :hover stuck on */
+@media (hover: hover) {
+  .logo-svg:hover g {
+    animation: logo-beat 2s cubic-bezier(0.6, 1, 1, 1) infinite;
+  }
 }
 .logo-svg #l2 { animation-delay: -0.3s !important; }
 .logo-svg #l1 { animation-delay: -0.6s !important; }

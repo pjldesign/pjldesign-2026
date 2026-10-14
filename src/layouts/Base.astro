@@ -56,8 +56,8 @@ const links = [
     <meta property="og:url" content={canonical} />
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/NeueHaasUnicaW1G-Regular.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff" href="/fonts/NeueHaasUnicaW1G-Light.woff" crossorigin />
+    {/* No font preload tags: Firefox logs "preloaded but not used" on every page after the first, because
+        it reuses the font it already loaded. The fonts are small, cached for a year, and use font-display: swap. */}
     <link rel="preconnect" href="https://pjl-site-media.s3.amazonaws.com" crossorigin />
     {/* the home intro locks scrolling (see global.css); without JavaScript it could never unlock */}
     <noscript><style>html[data-preloading]{overflow:visible !important;touch-action:auto !important;animation:none !important}</style></noscript>

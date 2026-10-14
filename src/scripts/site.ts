@@ -2,7 +2,27 @@
 // Runs once; per-page setup re-runs on every Astro page swap (astro:page-load).
 
 const html = document.documentElement;
-html.dataset.loading = ''; // logo pulses until the first page is ready
+
+// The logo pulses while a page loads, and stops when the page has finished loading. That is all:
+//  - first / direct visit: stop on the browser's own `load` event (or immediately if it already fired)
+//  - clicking through to another page: stop as soon as the new page is swapped in (astro:after-swap)
+// A failsafe timer means a stalled request can never leave it pulsing forever.
+let loadingFailsafe: number | undefined;
+function startLoading(maxMs: number) {
+  html.dataset.loading = '';
+  clearTimeout(loadingFailsafe);
+  loadingFailsafe = window.setTimeout(stopLoading, maxMs);
+}
+function stopLoading() {
+  clearTimeout(loadingFailsafe);
+  delete html.dataset.loading;
+}
+startLoading(5000);
+if (document.readyState === 'complete') stopLoading();
+else window.addEventListener('load', stopLoading, { once: true });
+// a page restored from the browser's back/forward cache comes back mid-pulse, with no new load event
+window.addEventListener('pageshow', (e) => e.persisted && stopLoading());
+
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -148,22 +168,17 @@ document.addEventListener('submit', async (e) => {
 /* ---------- Page-load indicator: logo pulses while navigating ---------- */
 
 document.addEventListener('astro:before-preparation', () => {
-  html.dataset.loading = '';
+  startLoading(10000);
   setContact(false);
   setMenu(false);
 });
+// the new page is on screen: the navigation is done, stop pulsing right away
+document.addEventListener('astro:after-swap', stopLoading);
 document.addEventListener('astro:before-swap', () => {
   teardown.forEach((fn) => fn());
   teardown = [];
   document.body.removeAttribute('data-movie');
 });
-
-async function endLoading() {
-  const imgs = [...document.querySelectorAll<HTMLImageElement>('main img[loading="eager"]')].slice(0, 6);
-  await Promise.race([Promise.all(imgs.map((i) => imageReady(i))), sleep(3000)]);
-  await sleep(300);
-  delete html.dataset.loading;
-}
 
 /* ---------- Home hero: orange intro = preloader, then slideshow ---------- */
 
@@ -333,5 +348,4 @@ document.addEventListener('astro:page-load', () => {
   initLightbox();
   initRelated();
   initVimeo();
-  endLoading();
 });
