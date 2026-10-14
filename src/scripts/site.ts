@@ -33,16 +33,24 @@ function stopLoading() {
  */
 async function visibleImagesLoaded() {
   await sleep(150); // give the browser a moment to start the lazy images that are near the screen
-  for (let pass = 0; pass < 5; pass++) {
+  const vh = window.innerHeight;
+  // Rendered and near the screen. Hidden images (spare "Related" cards) have no box; a lazy image
+  // far down the page can be "started" only because its URL is already in the browser's memory from
+  // the previous page, and never finishes until scrolled to. Neither should hold the logo up.
+  const nearScreen = (img: HTMLImageElement) => {
+    const r = img.getBoundingClientRect();
+    return r.height > 0 && r.bottom > 0 && r.top < vh * 1.5;
+  };
+  for (let pass = 0; pass < 3; pass++) {
     const pending = [...document.querySelectorAll<HTMLImageElement>('main img')].filter(
       (img) =>
         img.getAttribute('src') && // viewer slides hold data-src until opened
         !img.complete && // still downloading (finished or broken images are complete)
-        (img.loading === 'eager' || img.currentSrc) && // lazy ones count only once started
+        (img.loading === 'eager' || (img.currentSrc && nearScreen(img))) && // lazy ones: started AND near the screen
         !img.closest('[data-slide]:not([data-current])'), // slideshow images waiting their turn
     );
     if (!pending.length) return;
-    await Promise.all(pending.map((img) => imageReady(img, 8000)));
+    await Promise.all(pending.map((img) => imageReady(img, 2500)));
   }
 }
 async function endLoading() {
@@ -201,13 +209,13 @@ document.addEventListener('submit', async (e) => {
 /* ---------- Page-load indicator: logo pulses while navigating ---------- */
 
 document.addEventListener('astro:before-preparation', () => {
-  startLoading(10000);
+  startLoading(8000);
   setContact(false);
   setMenu(false);
 });
 // Astro just cleared the <html> attributes (including data-loading) while swapping in the new page.
 // Keep pulsing until its images have loaded; astro:page-load below ends it.
-document.addEventListener('astro:after-swap', () => startLoading(10000));
+document.addEventListener('astro:after-swap', () => startLoading(6000));
 document.addEventListener('astro:before-swap', () => {
   teardown.forEach((fn) => fn());
   teardown = [];
