@@ -395,11 +395,27 @@ function initRelated() {
 /* ---------- Vimeo: dim the page and hide the nav while a video plays ---------- */
 
 async function initVimeo() {
+  const set = (on: boolean) => document.body.toggleAttribute('data-movie', on);
+  // our own player (direct video file): same black-out + hidden menu on play
+  const file = document.querySelector<HTMLVideoElement>('.embed-container video');
+  if (file) {
+    const on = () => set(true);
+    const off = () => set(false);
+    file.addEventListener('play', on);
+    file.addEventListener('pause', off);
+    file.addEventListener('ended', off);
+    onCleanup(() => {
+      document.body.removeAttribute('data-movie');
+      file.removeEventListener('play', on);
+      file.removeEventListener('pause', off);
+      file.removeEventListener('ended', off);
+    });
+    return;
+  }
   const iframe = document.querySelector<HTMLIFrameElement>('.embed-container iframe');
   if (!iframe) return;
   const { default: Player } = await import('@vimeo/player');
   const player = new Player(iframe);
-  const set = (on: boolean) => document.body.toggleAttribute('data-movie', on);
   player.on('play', () => set(true));
   player.on('pause', () => set(false));
   player.on('ended', () => set(false));

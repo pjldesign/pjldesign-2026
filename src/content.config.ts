@@ -13,7 +13,8 @@ const projects = defineCollection({
     // card thumbnail zoom in percent: 100 = none, any value up to 300 (was a fixed 0/150/200 preset)
     zoom: z.number().min(100).max(300).default(100),
     images: z.array(z.string()).default([]),
-    // Vimeo player URL (https://player.vimeo.com/video/...) shown above the case study
+    // Shown above the case study: a Vimeo player URL (https://player.vimeo.com/video/...) or a direct video file
+    // link (.mp4, .webm, .mov, .m4v), which plays in the site's own player
     video: z.string().nullable().default(null),
     siteLink: z.string().nullable().default(null),
     // which button the site link renders as; null = no button

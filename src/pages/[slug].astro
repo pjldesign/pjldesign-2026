@@ -19,6 +19,8 @@ const related = relatedPool(project, all);
 // pause other players. Added here so the editor's video field stays a plain player URL.
 const VIMEO_OPTIONS = 'title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479';
 const videoSrc = video ? `${video}${video.includes('?') ? '&' : '?'}${VIMEO_OPTIONS}` : undefined;
+// A direct video file (mp4/webm/mov/m4v) plays in our own player; anything else is treated as a Vimeo player URL.
+const isVideoFile = !!video && /\.(mp4|webm|mov|m4v)([?#]|$)/i.test(video);
 ---
 
 <Base
@@ -32,12 +34,17 @@ const videoSrc = video ? `${video}${video.includes('?') ? '&' : '?'}${VIMEO_OPTI
       video && (
         <div class="mx-auto mb-12 max-w-[1700px] gutter lg:mb-20">
           <div class="embed-container">
-            <iframe
-              src={videoSrc}
-              title={`${title} video`}
-              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-            />
+            {isVideoFile ? (
+              // #t=0.1 makes browsers paint a first frame instead of a black box before play
+              <video src={`${video}#t=0.1`} controls playsinline preload="metadata" title={`${title} video`} />
+            ) : (
+              <iframe
+                src={videoSrc}
+                title={`${title} video`}
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+              />
+            )}
           </div>
         </div>
       )
