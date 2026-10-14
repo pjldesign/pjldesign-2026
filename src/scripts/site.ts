@@ -189,6 +189,7 @@ document.addEventListener('submit', async (e) => {
   if (!form) return;
   e.preventDefault();
   const button = form.querySelector<HTMLButtonElement>('[data-contact-submit]')!;
+  if (button.disabled) return; // a send is already in flight
   const status = form.querySelector<HTMLElement>('[data-contact-status]')!;
   button.disabled = true;
   status.textContent = 'Sending…';
@@ -204,7 +205,14 @@ document.addEventListener('submit', async (e) => {
     // no confirmation text; the emptied form is the signal. Slide the panel shut after 3s
     contactCloseTimer = window.setTimeout(() => setContact(false), 3000);
   } catch {
-    status.textContent = 'Sorry, that didn’t send. Please email me directly instead.';
+    // The footer email opens this form, so a failed send must show the address itself.
+    const email = form.dataset.email ?? '';
+    const mail = document.createElement('a');
+    mail.href = `mailto:${email}`;
+    mail.textContent = email;
+    mail.className = 'underline';
+    status.textContent = 'Sorry, that didn’t send. Please email ';
+    status.append(mail, ' instead.');
   } finally {
     button.disabled = false;
   }
