@@ -193,12 +193,9 @@ document.addEventListener('submit', async (e) => {
     });
     if (!res.ok) throw new Error(String(res.status));
     form.reset();
-    status.textContent = 'Thanks! I’ll be in touch soon.';
-    // let the confirmation be read, then slide the panel shut and clear the message
-    contactCloseTimer = window.setTimeout(() => {
-      setContact(false);
-      setTimeout(() => (status.textContent = ''), 600);
-    }, 3000);
+    status.textContent = '';
+    // no confirmation text; the emptied form is the signal. Slide the panel shut after 3s
+    contactCloseTimer = window.setTimeout(() => setContact(false), 3000);
   } catch {
     status.textContent = 'Sorry, that didn’t send. Please email me directly instead.';
   } finally {
