@@ -172,6 +172,11 @@ document.addEventListener('click', (e) => {
     const open = !document.querySelector('[data-nav]')!.hasAttribute('data-contact-open');
     setContact(open);
   }
+  // links that open the contact panel (the footer email address): open only, never toggle shut
+  if (t.closest('[data-contact-open-link]')) {
+    e.preventDefault();
+    setContact(true);
+  }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.querySelector('[data-nav][data-contact-open]')) setContact(false);

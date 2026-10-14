@@ -143,7 +143,8 @@ const links = [
 
     <footer class="border-b-[10px] border-pjl bg-white gutter pt-6 pb-[max(2rem,env(safe-area-inset-bottom))] text-neutral-500">
       <div class="mx-auto grid max-w-[1700px] gap-1 text-base lg:grid-cols-3 lg:text-lg">
-        <a href={`mailto:${CONTACT_EMAIL}`} class="hover:text-pjl"><span>e. </span>{CONTACT_EMAIL}</a>
+        {/* opens the contact panel; the mailto is only the no-JavaScript fallback */}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="hover:text-pjl" data-contact-open-link><span>e. </span>{CONTACT_EMAIL}</a>
         {site.phone ? <p>t. {site.phone}</p> : <p aria-hidden="true" />}
         <p class="lg:text-right">© PJL Design <span data-year>{year}</span></p>
       </div>
