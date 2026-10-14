@@ -355,7 +355,7 @@ html[data-preloading] {
 .notfound-copy a {
   transition: color 0.3s;
 }
-.notfound-copy a.notfound-underline {
+.notfound-underline {
   text-decoration: underline;
   text-decoration-thickness: 0.04em;
   text-underline-offset: 0.12em;

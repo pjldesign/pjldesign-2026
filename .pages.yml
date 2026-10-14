@@ -120,5 +120,5 @@ content:
         type: string
 
       - name: notFoundLinkUnderline
-        label: 'Page-not-found screen: the words that are the clickable, underlined link (must match the text above exactly; empty = whole phrase is the link, no underline)'
+        label: 'Page-not-found screen: the underlined words; the link runs from them to the end of the phrase (must match the text above exactly; empty = whole phrase is the link, no underline)'
         type: string

@@ -14,7 +14,7 @@ const schema = z.object({
   notFoundTitle: z.string().min(1).default('Page not found'),
   notFoundText: z.string().default('That page doesn’t exist, or it has moved.'),
   notFoundLink: z.string().default('Back to the work!'),
-  /** the words inside that phrase that are the clickable, underlined link (must appear in it; empty = whole phrase is the link, no underline) */
+  /** the underlined words inside that phrase; the link runs from them to the end of the phrase (must appear in it; empty = whole phrase is the link, no underline) */
   notFoundLinkUnderline: z.string().default('the work'),
 });
 
