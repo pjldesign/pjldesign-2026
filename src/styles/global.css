@@ -353,6 +353,9 @@ html[data-preloading] {
   line-height: 3rem;
 }
 .notfound-copy a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.04em;
+  text-underline-offset: 0.12em;
   transition: color 0.3s;
 }
 .notfound-copy a:hover,

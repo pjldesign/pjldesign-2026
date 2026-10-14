@@ -13,7 +13,7 @@ const schema = z.object({
   /** the "page not found" screen */
   notFoundTitle: z.string().min(1).default('Page not found'),
   notFoundText: z.string().default('That page doesn’t exist, or it has moved.'),
-  notFoundLink: z.string().default('Back to the work...'),
+  notFoundLink: z.string().default('Back to the work!'),
 });
 
 export const site = schema.parse(raw);
