@@ -8,3 +8,6 @@ brief/pjl-migration-package/live-snapshot-2026-10-03/
 
 # Source video files (large). Hosted on Cloudflare, never committed.
 media/
+
+# MODX Cloud backup archives (database + config with credentials). Local only, never committed.
+modx_bak/
