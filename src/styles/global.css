@@ -226,7 +226,7 @@ body[data-movie] .nav-wrapper {
 .nav-list-wrap {
   display: contents; /* tablet and up: no wrapper */
 }
-@media (max-width: 40em) {
+@media (max-width: 39.99em) {
   .nav-list-wrap {
     display: grid;
     width: 100%;
@@ -271,7 +271,7 @@ body[data-movie] .nav-wrapper {
     transition-delay: calc(0.08s + var(--i, 0) * 0.07s);
   }
 }
-@media (max-width: 40em) {
+@media (max-width: 39.99em) {
   .nav-wrapper[data-menu-open] {
     background: #fff;
   }
@@ -772,7 +772,7 @@ html[data-scrolled] .hero .scroll-cue {
   height: 100%;
   padding-bottom: 0;
 }
-@media (max-width: 40em) {
+@media (max-width: 39.99em) {
   .vp-big svg {
     width: 2.67rem;
     height: 2.67rem;
