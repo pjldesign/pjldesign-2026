@@ -216,16 +216,59 @@ body[data-movie] .nav-wrapper {
   cursor: default;
 }
 
-/* Phones: links collapse into a hamburger menu */
+/* Phones: links collapse into a hamburger menu that slides down, one item after another, and folds back up
+   in reverse. The wrapper animates the height (grid rows 0fr -> 1fr, so no guessing at a pixel height); each
+   item fades and drops in with a staggered delay (--i is its position, set in Base.astro). Closing runs the
+   same thing backwards: the last item leaves first, then the panel collapses. */
 .nav-list {
-  display: none;
-}
-.nav-wrapper[data-menu-open] .nav-list {
   display: flex;
 }
-@media (min-width: 40.0625em) {
-  .nav-list {
-    display: flex;
+.nav-list-wrap {
+  display: contents; /* tablet and up: no wrapper */
+}
+@media (max-width: 40em) {
+  .nav-list-wrap {
+    display: grid;
+    width: 100%;
+    grid-template-rows: 0fr;
+    background: #fff;
+    visibility: hidden;
+    /* closing: wait for the items to leave, then fold the panel up, then hide it from keyboards/readers */
+    transition:
+      grid-template-rows 0.35s ease-in-out 0.2s,
+      visibility 0s linear 0.6s;
+  }
+  .nav-wrapper[data-menu-open] .nav-list-wrap {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows 0.4s ease-out,
+      visibility 0s;
+  }
+  .nav-list-wrap > .nav-list {
+    min-height: 0;
+    overflow: hidden;
+  }
+  .nav-list > li:first-child {
+    margin-top: 18px; /* the gap under the logo row */
+  }
+  .nav-list > li {
+    opacity: 0;
+    transform: translateY(-0.9rem);
+    /* closing: bottom item first */
+    transition:
+      opacity 0.22s ease-in,
+      transform 0.22s ease-in;
+    transition-delay: calc((3 - var(--i, 0)) * 0.05s);
+  }
+  .nav-wrapper[data-menu-open] .nav-list > li {
+    opacity: 1;
+    transform: none;
+    /* opening: top item first, each a beat after the one above */
+    transition:
+      opacity 0.3s ease-out,
+      transform 0.3s ease-out;
+    transition-delay: calc(0.08s + var(--i, 0) * 0.07s);
   }
 }
 @media (max-width: 40em) {

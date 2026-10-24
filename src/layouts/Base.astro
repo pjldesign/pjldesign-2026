@@ -93,22 +93,26 @@ const links = [
           <span class="menu-close" aria-hidden="true">Close</span>
         </button>
 
-        <ul id="nav-list" class="nav-list mt-[18px] w-full flex-col sm:mt-0 sm:w-auto sm:flex-row sm:items-center">
+        {/* Phones: the wrapper animates open/closed (see .nav-list-wrap in global.css); from tablet up it vanishes
+            (display: contents) and the list sits inline as before. */}
+        <div class="nav-list-wrap">
+        <ul id="nav-list" class="nav-list w-full flex-col sm:w-auto sm:flex-row sm:items-center">
           {
-            links.map((l) => (
-              <li class="border-b border-pjl py-2.5 sm:border-0 sm:py-0">
+            links.map((l, i) => (
+              <li class="border-b border-pjl py-2.5 sm:border-0 sm:py-0" style={`--i:${i}`}>
                 <a href={l.href} class="nav-link" data-nav-link>
                   {l.label}
                 </a>
               </li>
             ))
           }
-          <li class="py-2.5 sm:py-0">
+          <li class="py-2.5 sm:py-0" style={`--i:${links.length}`}>
             <button type="button" class="nav-link cursor-pointer" data-contact-toggle aria-expanded="false" aria-controls="contact-panel">
               <span data-label-closed>Contact</span><span data-label-open hidden>Close</span>
             </button>
           </li>
         </ul>
+        </div>
       </nav>
 
       <div id="contact-panel" class="contact-panel" data-contact-panel>
