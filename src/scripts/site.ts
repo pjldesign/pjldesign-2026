@@ -137,6 +137,12 @@ function initNavState() {
 
 /* ---------- Phone menu (hamburger) ---------- */
 
+/* Pinch-zoom is switched off (touch-action in global.css + the viewport tag). iOS Safari ignores both, but it
+   still sends its own gesture events for a pinch, which can be cancelled. */
+for (const type of ['gesturestart', 'gesturechange', 'gestureend']) {
+  document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+}
+
 let menuClosingTimer: number | undefined;
 
 function setMenu(open: boolean) {
@@ -153,7 +159,7 @@ function setMenu(open: boolean) {
     nav.removeAttribute('data-menu-closing');
   } else if (wasOpen) {
     nav.setAttribute('data-menu-closing', '');
-    menuClosingTimer = window.setTimeout(() => nav.removeAttribute('data-menu-closing'), 800);
+    menuClosingTimer = window.setTimeout(() => nav.removeAttribute('data-menu-closing'), 1000);
   }
 }
 

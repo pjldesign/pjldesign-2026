@@ -60,6 +60,9 @@
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    /* No pinch-zoom and no double-tap zoom: touches may only scroll. (The viewport tag says the same for
+       Android; iOS Safari ignores the tag, so the gesture handler in site.ts covers it.) */
+    touch-action: pan-x pan-y;
   }
   body {
     background: #fff;
@@ -246,14 +249,14 @@ body[data-movie] .nav-wrapper {
     background-color: transparent;
     visibility: hidden;
     /* closing, in order: the items leave first (bottom first, 0 to 0.3s) with the drawer white behind them;
-       the white then fades quickly (0.24 to 0.38s: it starts a couple of hairs before the last item is gone
-       and ends right after, so there is neither bare text nor an empty white drawer on show); the
-       now-empty, see-through drawer folds last (0.34 to 0.6s); then it is hidden from keyboards and
-       screen readers. Every curve is ease-in-out, like the items. */
+       the white then fades (0.24 to 0.44s: it starts a couple of hairs before the last item is gone, so
+       there is neither bare text nor an empty white drawer on show); the now-empty, see-through drawer
+       folds last (0.34 to 0.78s); then it is hidden from keyboards and screen readers. Every curve is
+       ease-in-out, like the items. */
     transition:
-      grid-template-rows 0.26s ease-in-out 0.34s,
-      background-color 0.14s ease-in-out 0.24s,
-      visibility 0s linear 0.62s;
+      grid-template-rows 0.44s ease-in-out 0.34s,
+      background-color 0.2s ease-in-out 0.24s,
+      visibility 0s linear 0.8s;
   }
   .nav-wrapper[data-menu-open] .nav-list-wrap {
     grid-template-rows: 1fr;
@@ -298,7 +301,7 @@ body[data-movie] .nav-wrapper {
      (0.24s), then fades with the drawer. (The flag is set in setMenu() and clears itself.) */
   .nav-wrapper[data-menu-closing]:not([data-menu-open]) {
     transition:
-      background-color 0.14s ease-in-out 0.24s,
+      background-color 0.2s ease-in-out 0.24s,
       opacity 0.5s ease-out,
       transform 0.5s ease-out;
   }
@@ -777,6 +780,7 @@ html[data-scrolled] .hero .scroll-cue {
 }
 /* scrubber: pjl orange for what's played, translucent white for the rest. Square corners, invisible handle. */
 .vp-seek {
+  touch-action: pan-y; /* a sideways drag must move the scrubber, not be claimed as a page pan */
   --p: 0%;
   flex: 1;
   min-width: 0;
