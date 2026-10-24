@@ -230,7 +230,8 @@ body[data-movie] .nav-wrapper {
 /* Phones and tablet portrait: links collapse into a hamburger menu that slides down, one item after another, and folds back up
    in reverse. The wrapper animates the height (grid rows 0fr -> 1fr, so no guessing at a pixel height); each
    item fades and drops in with a staggered delay (--i is its position, set in Base.astro). Closing runs the
-   same thing backwards: the backdrop and items fade out first (last item first), then the empty panel folds. */
+   same thing backwards: the items leave first (last item first) with the drawer still open and white behind
+   them; then the drawer fades and folds. */
 .nav-list {
   display: flex;
 }
@@ -244,13 +245,14 @@ body[data-movie] .nav-wrapper {
     grid-template-rows: 0fr;
     background-color: transparent;
     visibility: hidden;
-    /* closing, in order: the white backdrop and the items fade out first (items bottom-first), THEN the
-       now-empty, see-through panel folds up a beat later, so there is never a trace of white or text
-       left behind; finally it is hidden from keyboards and screen readers */
+    /* closing, in order: the items leave first (bottom first) while the drawer stays open and white behind
+       them; only once they are completely gone does the drawer fade and fold (they start together at 0.3s),
+       so no menu text is ever left floating on the page without its white; finally it is hidden from
+       keyboards and screen readers */
     transition:
-      grid-template-rows 0.3s ease-in-out 0.27s,
-      background-color 0.12s ease-out,
-      visibility 0s linear 0.6s;
+      grid-template-rows 0.28s ease-in-out 0.3s,
+      background-color 0.12s ease-out 0.3s,
+      visibility 0s linear 0.62s;
   }
   .nav-wrapper[data-menu-open] .nav-list-wrap {
     grid-template-rows: 1fr;
@@ -271,25 +273,33 @@ body[data-movie] .nav-wrapper {
   .nav-list > li {
     opacity: 0;
     transform: translateY(-0.9rem);
-    /* closing: bottom item first, quick; ease-out so each one starts vanishing at once */
+    /* closing: bottom item first */
     transition:
-      opacity 0.16s ease-out,
-      transform 0.16s ease-out;
-    transition-delay: calc((3 - var(--i, 0)) * 0.035s);
+      opacity 0.2s ease-in-out,
+      transform 0.2s ease-in-out;
+    transition-delay: calc((3 - var(--i, 0)) * 0.04s);
   }
   .nav-wrapper[data-menu-open] .nav-list > li {
     opacity: 1;
     transform: none;
     /* opening: top item first, each a beat after the one above */
     transition:
-      opacity 0.3s ease-out,
-      transform 0.3s ease-out;
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
     transition-delay: calc(0.08s + var(--i, 0) * 0.07s);
   }
 }
 @media (max-width: 39.99em), (min-width: 40em) and (max-width: 63.99em) and (orientation: portrait) {
   .nav-wrapper[data-menu-open] {
     background: #fff;
+  }
+  /* the header bar is white while the menu is open; on closing it keeps that white until the items are gone
+     (0.3s), then fades with the drawer. (The flag is set in setMenu() and clears itself.) */
+  .nav-wrapper[data-menu-closing]:not([data-menu-open]) {
+    transition:
+      background-color 0.12s ease-out 0.3s,
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
   }
 }
 /* tablet portrait uses the tablet type size, stacked flush with the logo (no side padding) */

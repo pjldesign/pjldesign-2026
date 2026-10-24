@@ -137,12 +137,24 @@ function initNavState() {
 
 /* ---------- Phone menu (hamburger) ---------- */
 
+let menuClosingTimer: number | undefined;
+
 function setMenu(open: boolean) {
   const nav = document.querySelector<HTMLElement>('[data-nav]');
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   if (!nav || !btn) return;
+  const wasOpen = nav.hasAttribute('data-menu-open');
   nav.toggleAttribute('data-menu-open', open);
   btn.setAttribute('aria-expanded', String(open));
+  // While the menu is closing, [data-menu-closing] lets the CSS keep the header's white until the items have
+  // finished leaving (see the hamburger menu rules in global.css). It clears itself once the close is done.
+  clearTimeout(menuClosingTimer);
+  if (open) {
+    nav.removeAttribute('data-menu-closing');
+  } else if (wasOpen) {
+    nav.setAttribute('data-menu-closing', '');
+    menuClosingTimer = window.setTimeout(() => nav.removeAttribute('data-menu-closing'), 800);
+  }
 }
 
 let contactCloseTimer: number | undefined;
