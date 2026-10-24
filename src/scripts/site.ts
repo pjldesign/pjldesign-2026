@@ -159,7 +159,7 @@ function setMenu(open: boolean) {
     nav.removeAttribute('data-menu-closing');
   } else if (wasOpen) {
     nav.setAttribute('data-menu-closing', '');
-    menuClosingTimer = window.setTimeout(() => nav.removeAttribute('data-menu-closing'), 1000);
+    menuClosingTimer = window.setTimeout(() => nav.removeAttribute('data-menu-closing'), 1100);
   }
 }
 

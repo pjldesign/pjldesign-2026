@@ -249,14 +249,13 @@ body[data-movie] .nav-wrapper {
     background-color: transparent;
     visibility: hidden;
     /* closing, in order: the items leave first (bottom first, 0 to 0.3s) with the drawer white behind them;
-       the white then fades (0.24 to 0.44s: it starts a couple of hairs before the last item is gone, so
-       there is neither bare text nor an empty white drawer on show); the now-empty, see-through drawer
-       folds last (0.34 to 0.78s); then it is hidden from keyboards and screen readers. Every curve is
+       only after the last one is gone does the white fade (0.34 to 0.54s); the now-empty, see-through
+       drawer folds last (0.4 to 0.84s); then it is hidden from keyboards and screen readers. Every curve is
        ease-in-out, like the items. */
     transition:
-      grid-template-rows 0.44s ease-in-out 0.34s,
-      background-color 0.2s ease-in-out 0.24s,
-      visibility 0s linear 0.8s;
+      grid-template-rows 0.44s ease-in-out 0.4s,
+      background-color 0.2s ease-in-out 0.34s,
+      visibility 0s linear 0.86s;
   }
   .nav-wrapper[data-menu-open] .nav-list-wrap {
     grid-template-rows: 1fr;
@@ -298,10 +297,10 @@ body[data-movie] .nav-wrapper {
     background: #fff;
   }
   /* the header bar is white while the menu is open; on closing it keeps that white until the items are gone
-     (0.24s), then fades with the drawer. (The flag is set in setMenu() and clears itself.) */
+     (0.34s), then fades with the drawer. (The flag is set in setMenu() and clears itself.) */
   .nav-wrapper[data-menu-closing]:not([data-menu-open]) {
     transition:
-      background-color 0.2s ease-in-out 0.24s,
+      background-color 0.2s ease-in-out 0.34s,
       opacity 0.5s ease-out,
       transform 0.5s ease-out;
   }
