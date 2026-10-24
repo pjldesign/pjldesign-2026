@@ -245,13 +245,14 @@ body[data-movie] .nav-wrapper {
     grid-template-rows: 0fr;
     background-color: transparent;
     visibility: hidden;
-    /* closing, in order: the items leave first (bottom first) while the drawer stays open and white behind
-       them; only once they are completely gone does the drawer fade and fold (they start together at 0.3s),
-       so no menu text is ever left floating on the page without its white; finally it is hidden from
-       keyboards and screen readers */
+    /* closing, in order: the items leave first (bottom first, 0 to 0.3s) with the drawer white behind them;
+       the white then fades quickly (0.24 to 0.38s: it starts a couple of hairs before the last item is gone
+       and ends right after, so there is neither bare text nor an empty white drawer on show); the
+       now-empty, see-through drawer folds last (0.34 to 0.6s); then it is hidden from keyboards and
+       screen readers. Every curve is ease-in-out, like the items. */
     transition:
-      grid-template-rows 0.28s ease-in-out 0.3s,
-      background-color 0.12s ease-out 0.3s,
+      grid-template-rows 0.26s ease-in-out 0.34s,
+      background-color 0.14s ease-in-out 0.24s,
       visibility 0s linear 0.62s;
   }
   .nav-wrapper[data-menu-open] .nav-list-wrap {
@@ -259,8 +260,8 @@ body[data-movie] .nav-wrapper {
     background-color: #fff;
     visibility: visible;
     transition:
-      grid-template-rows 0.4s ease-out,
-      background-color 0.12s ease-in,
+      grid-template-rows 0.4s ease-in-out,
+      background-color 0.12s ease-in-out,
       visibility 0s;
   }
   .nav-list-wrap > .nav-list {
@@ -294,10 +295,10 @@ body[data-movie] .nav-wrapper {
     background: #fff;
   }
   /* the header bar is white while the menu is open; on closing it keeps that white until the items are gone
-     (0.3s), then fades with the drawer. (The flag is set in setMenu() and clears itself.) */
+     (0.24s), then fades with the drawer. (The flag is set in setMenu() and clears itself.) */
   .nav-wrapper[data-menu-closing]:not([data-menu-open]) {
     transition:
-      background-color 0.12s ease-out 0.3s,
+      background-color 0.14s ease-in-out 0.24s,
       opacity 0.5s ease-out,
       transform 0.5s ease-out;
   }
