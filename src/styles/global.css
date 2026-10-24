@@ -1,5 +1,16 @@
 @import 'tailwindcss';
 
+/* Where the menu sits inline (nav-link row) instead of behind the hamburger: desktop (1024px+) and anything
+   from 640px up in landscape. Phones and tablets held upright (portrait, under 1024px) get the hamburger. */
+@custom-variant inline-nav {
+  @media (min-width: 64em) {
+    @slot;
+  }
+  @media (min-width: 40em) and (orientation: landscape) {
+    @slot;
+  }
+}
+
 @theme {
   --color-pjl: #fe330a;
   --color-ink: #333;
@@ -216,34 +227,38 @@ body[data-movie] .nav-wrapper {
   cursor: default;
 }
 
-/* Phones: links collapse into a hamburger menu that slides down, one item after another, and folds back up
+/* Phones and tablet portrait: links collapse into a hamburger menu that slides down, one item after another, and folds back up
    in reverse. The wrapper animates the height (grid rows 0fr -> 1fr, so no guessing at a pixel height); each
    item fades and drops in with a staggered delay (--i is its position, set in Base.astro). Closing runs the
-   same thing backwards: the last item leaves first while the panel folds up around them. */
+   same thing backwards: the backdrop and items fade out first (last item first), then the empty panel folds. */
 .nav-list {
   display: flex;
 }
 .nav-list-wrap {
   display: contents; /* tablet and up: no wrapper */
 }
-@media (max-width: 39.99em) {
+@media (max-width: 39.99em), (min-width: 40em) and (max-width: 63.99em) and (orientation: portrait) {
   .nav-list-wrap {
     display: grid;
     width: 100%;
     grid-template-rows: 0fr;
-    background: #fff;
+    background-color: transparent;
     visibility: hidden;
-    /* closing: the panel folds up while the items leave (bottom first), so no empty white strip is left
-       hanging around; then it is hidden from keyboards and screen readers */
+    /* closing, in order: the white backdrop and the items fade out first (items bottom-first), THEN the
+       now-empty, see-through panel folds up a beat later, so there is never a trace of white or text
+       left behind; finally it is hidden from keyboards and screen readers */
     transition:
-      grid-template-rows 0.34s ease-in-out,
-      visibility 0s linear 0.36s;
+      grid-template-rows 0.3s ease-in-out 0.27s,
+      background-color 0.12s ease-out,
+      visibility 0s linear 0.6s;
   }
   .nav-wrapper[data-menu-open] .nav-list-wrap {
     grid-template-rows: 1fr;
+    background-color: #fff;
     visibility: visible;
     transition:
       grid-template-rows 0.4s ease-out,
+      background-color 0.12s ease-in,
       visibility 0s;
   }
   .nav-list-wrap > .nav-list {
@@ -256,11 +271,11 @@ body[data-movie] .nav-wrapper {
   .nav-list > li {
     opacity: 0;
     transform: translateY(-0.9rem);
-    /* closing: bottom item first, quick */
+    /* closing: bottom item first, quick; ease-out so each one starts vanishing at once */
     transition:
-      opacity 0.18s ease-in,
-      transform 0.18s ease-in;
-    transition-delay: calc((3 - var(--i, 0)) * 0.04s);
+      opacity 0.16s ease-out,
+      transform 0.16s ease-out;
+    transition-delay: calc((3 - var(--i, 0)) * 0.035s);
   }
   .nav-wrapper[data-menu-open] .nav-list > li {
     opacity: 1;
@@ -272,9 +287,19 @@ body[data-movie] .nav-wrapper {
     transition-delay: calc(0.08s + var(--i, 0) * 0.07s);
   }
 }
-@media (max-width: 39.99em) {
+@media (max-width: 39.99em), (min-width: 40em) and (max-width: 63.99em) and (orientation: portrait) {
   .nav-wrapper[data-menu-open] {
     background: #fff;
+  }
+}
+/* tablet portrait uses the tablet type size, stacked flush with the logo (no side padding) */
+@media (min-width: 40.0625em) and (max-width: 63.99em) and (orientation: portrait) {
+  .nav-link {
+    padding: 0;
+  }
+  .menu-close {
+    font-size: 1.75rem;
+    line-height: 2rem;
   }
 }
 

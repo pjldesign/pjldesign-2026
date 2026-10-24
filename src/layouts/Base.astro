@@ -80,7 +80,7 @@ const links = [
 
         <button
           type="button"
-          class="-mr-1 p-1 text-pjl sm:hidden"
+          class="-mr-1 p-1 text-pjl inline-nav:hidden"
           data-menu-toggle
           aria-expanded="false"
           aria-controls="nav-list"
@@ -93,20 +93,20 @@ const links = [
           <span class="menu-close" aria-hidden="true">Close</span>
         </button>
 
-        {/* Phones: the wrapper animates open/closed (see .nav-list-wrap in global.css); from tablet up it vanishes
-            (display: contents) and the list sits inline as before. */}
+        {/* Phones and tablet portrait: the wrapper animates open/closed (see .nav-list-wrap in global.css); where the
+            menu is inline (landscape and desktop) it vanishes (display: contents) and the list sits in a row. */}
         <div class="nav-list-wrap">
-        <ul id="nav-list" class="nav-list w-full flex-col sm:w-auto sm:flex-row sm:items-center">
+        <ul id="nav-list" class="nav-list w-full flex-col inline-nav:w-auto inline-nav:flex-row inline-nav:items-center">
           {
             links.map((l, i) => (
-              <li class="border-b border-pjl py-2.5 sm:border-0 sm:py-0" style={`--i:${i}`}>
+              <li class="border-b border-pjl py-2.5 inline-nav:border-0 inline-nav:py-0" style={`--i:${i}`}>
                 <a href={l.href} class="nav-link" data-nav-link>
                   {l.label}
                 </a>
               </li>
             ))
           }
-          <li class="py-2.5 sm:py-0" style={`--i:${links.length}`}>
+          <li class="py-2.5 inline-nav:py-0" style={`--i:${links.length}`}>
             <button type="button" class="nav-link cursor-pointer" data-contact-toggle aria-expanded="false" aria-controls="contact-panel">
               <span data-label-closed>Contact</span><span data-label-open hidden>Close</span>
             </button>
