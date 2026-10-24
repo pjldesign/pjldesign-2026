@@ -395,6 +395,31 @@ html[data-loading] .logo-svg g {
   padding: 0.75rem 0;
   border-radius: 0;
 }
+/* Where the menu is a hamburger (phones, tablet portrait) the contact fields are the "next screen" of the same
+   menu, so they take its measurements: the same type size and row height as the menu items, the same left
+   edge as the logo and menu text (the nav gutter), and the same first-row position under the logo row. */
+@media (max-width: 39.99em), (min-width: 40em) and (max-width: 63.99em) and (orientation: portrait) {
+  .contact-field {
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    padding: 0.625rem 0;
+  }
+  [data-contact-form] {
+    padding-top: 2px; /* nav bottom padding (16px) + 2 = the menu list's 18px gap under the logo row */
+    padding-left: max(calc(1.6rem + 4px), env(safe-area-inset-left));
+  }
+}
+@media (min-width: 40.0625em) and (max-width: 63.99em) and (orientation: portrait) {
+  .contact-field {
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+  [data-contact-form] {
+    padding-top: 0;
+    margin-top: -2px; /* tablet nav bottom padding is 20px, so pull up 2px to land on the same 18px gap */
+    padding-right: max(30px, env(safe-area-inset-right));
+  }
+}
 .contact-field::placeholder {
   color: color-mix(in srgb, var(--color-pjl) 55%, transparent);
 }
