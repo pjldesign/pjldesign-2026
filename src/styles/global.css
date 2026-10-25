@@ -246,24 +246,21 @@ body[data-movie] .nav-wrapper {
     display: grid;
     width: 100%;
     grid-template-rows: 0fr;
-    background-color: transparent;
     visibility: hidden;
-    /* closing, in order: the items leave first (bottom first, 0 to 0.3s) with the drawer white behind them;
-       only after the last one is gone does the white fade (0.34 to 0.54s); the now-empty, see-through
-       drawer folds last (0.4 to 0.84s); then it is hidden from keyboards and screen readers. Every curve is
-       ease-in-out, like the items. */
+    /* closing, in order: the items leave first (bottom first, 0 to 0.3s) with the header's white behind them;
+       only after the last one is gone does that white fade (0.34 to 0.54s, set on .nav-wrapper below); the
+       now-empty, see-through drawer folds last (0.4 to 0.84s); then it is hidden from keyboards and screen
+       readers. Every curve is ease-in-out, like the items. The drawer has NO white of its own: it sits inside
+       the header, whose white already covers it, and two stacked half-faded whites look like a lingering flash. */
     transition:
       grid-template-rows 0.44s ease-in-out 0.4s,
-      background-color 0.2s ease-in-out 0.34s,
       visibility 0s linear 0.86s;
   }
   .nav-wrapper[data-menu-open] .nav-list-wrap {
     grid-template-rows: 1fr;
-    background-color: #fff;
     visibility: visible;
     transition:
       grid-template-rows 0.4s ease-in-out,
-      background-color 0.12s ease-in-out,
       visibility 0s;
   }
   .nav-list-wrap > .nav-list {
